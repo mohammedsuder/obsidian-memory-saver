@@ -53,3 +53,4 @@
 .pm-about li { margin-bottom: 4px; }
 .pm-about .pm-about-note { color: var(--text-muted); font-size: var(--font-ui-small); }
 .pm-about .pm-about-footer { margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--background-modifier-border); color: var(--text-muted); font-size: var(--font-ui-small); }
+.pm-about .pm-about-lead { font-weight: var(--font-semibold); font-size: var(--font-ui-medium); }

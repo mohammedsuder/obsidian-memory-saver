@@ -1,14 +1,39 @@
 # Plugin Memory Monitor
 
-An Obsidian desktop plugin that shows Obsidian's memory and plugin count in the status bar, and lets each device start Obsidian in **Standard**, **Lite** or **Extreme** mode so plugins you don't need never load.
+**Save memory in Obsidian on resource-constrained machines.** Older laptops, low-RAM PCs and shared or virtual desktops feel the cost of every Obsidian plugin. Plugin Memory Monitor lets each device start Obsidian with only the plugins it needs, so the rest never load and never use memory. It also shows Obsidian's memory and plugin count in the status bar, so you can see the effect.
 
-Obsidian plugins use memory as soon as they load, and a plugin that has loaded keeps most of that memory until Obsidian restarts. Switching plugins off during a session therefore saves very little. Not loading them at start-up does.
+| Start mode | What loads at start-up | Memory |
+|---|---|---|
+| 🧩 Standard | Every plugin switched on in Settings → Community plugins. Normal Obsidian. | Most |
+| 🪶 Lite | Only the plugins you tick for Lite (shared across your devices), and only if they are switched on. | Less |
+| ⛔ Extreme | No community plugins except this one. | Least |
 
-| Start mode | What loads at start-up |
-|---|---|
-| 🧩 Standard | Every plugin switched on in Settings → Community plugins. Normal Obsidian. |
-| 🪶 Lite | Only the plugins you tick for Lite (shared across your devices), and only if they are switched on. |
-| ⛔ Extreme | No community plugins except this one. |
+Each device keeps its own start mode: a low-RAM laptop can start in Lite every day while your main PC, syncing the same vault, starts in Standard.
+
+## Why start-up matters
+
+Obsidian runs on Electron (Chromium). A community plugin uses memory as soon as it loads, and once loaded it keeps most of that memory until Obsidian restarts: switching a plugin off during a session hands very little back to the system. The only reliable way to save that memory is not to load the plugin in the first place, which is what the start modes do.
+
+## How much can it save?
+
+It depends on which plugins you use. Measured in one vault with about 35 community plugins, Obsidian 1.14.4 on Windows:
+
+| | Window memory | JavaScript heap |
+|---|---|---|
+| Standard start | 446 MB | 177 MB |
+| Lite start (8 plugins) | **295 MB (about a third less)** | **90 MB (about half)** |
+| Switching from Standard to Extreme during a session, for comparison | 1009 MB → 976 MB | |
+
+In the same vault, Obsidian settled at about 370 MB with no community plugins at all (Restricted mode), against roughly 590 to 950 MB with all of them, so the plugins accounted for roughly 220 to 580 MB.
+
+## Tips for saving the most memory
+
+- Start in **Lite** day to day, and tick only the plugins you rely on every day.
+- Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.
+- Need a plugin briefly? Use **Load now** in the plugin list. It lasts until the next restart.
+- To get memory back, **restart** in a lighter mode. Unloading a plugin mid-session frees little.
+- Read the status bar a few minutes after start-up: plugins that index your vault push memory up at first.
+- Use **Extreme** for the lowest footprint, for example quick note-taking on a very constrained machine.
 
 Only community plugins are affected. Obsidian's core plugins (Daily notes, Search and so on) load as set in Settings → Core plugins in every mode.
 
@@ -27,14 +52,6 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 - Choosing Lite or Extreme moves this plugin to the top of the list automatically; only the order changes. A plugin installed from the community directory is added at the end of that list, so this step matters. If it is not first, the popup warns and offers **Move to top**.
 - Skipped plugins stay switched on, so a Standard start loads them all again.
 - Fail-safe: if this plugin is removed, switched off or not first in the list, Obsidian loads plugins as normal. If you switch it off after a Lite start, it loads what it skipped.
-
-### Measured example (Obsidian 1.14.4, about 35 community plugins)
-
-| | Window memory | JavaScript heap |
-|---|---|---|
-| Standard start | 446 MB | 177 MB |
-| Lite start (8 plugins) | 295 MB | 90 MB |
-| Switching from Standard to Extreme during a session | 1009 MB → 976 MB | |
 
 ## Storage
 

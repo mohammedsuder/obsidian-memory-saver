@@ -1,9 +1,9 @@
 {
   "id": "plugin-monitor",
   "name": "Plugin Memory Monitor",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "minAppVersion": "1.8.7",
-  "description": "Shows Obsidian's memory and plugin count in the status bar, and lets each device start Obsidian in Standard, Lite or Extreme mode so plugins you do not need never load.",
+  "description": "Save memory on resource-constrained machines: choose which community plugins load when Obsidian starts, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
   "author": "Mohammed Suder",
   "isDesktopOnly": true,
   "authorUrl": "https://github.com/mohammedsuder"

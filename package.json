@@ -1,8 +1,8 @@
 {
   "name": "obsidian-plugin-memory-monitor",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
-  "description": "Obsidian plugin: memory and plugin count in the status bar, and per-device Standard, Lite and Extreme start modes so plugins you do not need never load.",
+  "description": "Obsidian plugin to save memory on resource-constrained machines: choose which community plugins load when Obsidian starts, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
   "scripts": {
     "dev": "node esbuild.config.mjs watch",
     "build": "tsc --noEmit && node esbuild.config.mjs production",

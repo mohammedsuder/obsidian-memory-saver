@@ -417,7 +417,18 @@ class AboutModal extends Modal {
 		const c = this.contentEl;
 		c.addClass('pm-about');
 		c.createEl('h2', { text: 'Plugin Memory Monitor' });
-		c.createEl('p', { text: 'Obsidian plugins use memory as soon as they load, and a plugin that has loaded keeps most of that memory until Obsidian restarts. Plugin Memory Monitor lets you choose which plugins load when Obsidian starts, separately on each device, and shows how much memory Obsidian is using.' });
+		c.createEl('p', { cls: 'pm-about-lead', text: 'Save memory in Obsidian on machines with limited RAM, such as older laptops, low-memory PCs and virtual desktops.' });
+		c.createEl('p', { text: 'Every community plugin uses memory as soon as it loads, and keeps most of that memory until Obsidian restarts. Switching a plugin off during a session hands very little back. Plugin Memory Monitor saves memory the reliable way: it lets each device choose which plugins load when Obsidian starts, so the rest never load at all. The status bar shows how much memory Obsidian is using, so you can see the difference.' });
+
+		c.createEl('h3', { text: 'Saving memory' });
+		const save = c.createEl('ul');
+		save.createEl('li', { text: 'Start in 🪶 Lite day to day, and tick only the plugins you rely on every day.' });
+		save.createEl('li', { text: 'Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.' });
+		save.createEl('li', { text: 'Need a plugin briefly? Use "Load now" in the plugin list. It lasts until the next restart.' });
+		save.createEl('li', { text: 'To get memory back, restart in a lighter mode. Unloading a plugin mid-session frees little.' });
+		save.createEl('li', { text: 'Check the memory figure a few minutes after starting: plugins that index your vault push it up at first.' });
+		save.createEl('li', { text: 'Use ⛔ Extreme for the lowest memory, for example quick note-taking on a very constrained machine.' });
+		save.createEl('li', { text: 'Each device has its own start mode, so a low-memory laptop can start in Lite while a desktop syncing the same vault starts in Standard.' });
 
 		c.createEl('h3', { text: 'The status bar' });
 		const sb = c.createEl('ul');
