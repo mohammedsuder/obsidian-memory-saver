@@ -333,45 +333,68 @@ export default class PluginMonitor extends Plugin {
 		const m = this.last;
 		const saved = this.saved();
 		const installed = Object.keys(this.api.manifests).length;
+		const start = this.startMode();
 
+		// Header
 		const head = pop.createDiv({ cls: 'pm-pop-head' });
 		head.createSpan({ cls: 'pm-pop-title', text: 'Plugin Memory Monitor' });
 		this.addHelpIcon(head);
-		const info = pop.createDiv({ cls: 'pm-pop-info' });
-		info.createDiv({ text: `${ICON[this.startedIn]} Started in ${LABEL[this.startedIn]}`
-			+ (this.skippedAtStart.length ? `: ${this.skippedAtStart.length} plugins not loaded` : '') });
-		info.createDiv({ text: `🧩 ${this.running().length} plugins running of ${saved.length} switched on (${installed} installed)` });
-		// After a Standard start, anything switched on but not running failed to load.
-		const notRunning = this.startedIn === 'full' ? saved.filter((id) => !this.api.plugins[id]) : [];
-		if (notRunning.length) info.createDiv({ cls: 'pm-pop-warn', text: `Switched on but not running: ${notRunning.map((id) => this.pluginName(id)).join(', ')}` });
-		if (m) info.createDiv({ text: `Memory ${m.source === 'none' ? '?' : fmtMb(m.mb)} (window process)${m.heapMb !== null ? ` · JS heap ${fmtMb(m.heapMb)}` : ''}` });
 
-		const start = this.startMode();
-		pop.createDiv({ cls: 'pm-pop-sub', text: 'Start Obsidian in (this device)' });
-		const toggle = pop.createDiv({ cls: 'pm-toggle' });
+		// Start-up mode: the setting that saves memory, first.
+		const modeSec = pop.createDiv({ cls: 'pm-pop-section' });
+		modeSec.createDiv({ cls: 'pm-pop-label', text: 'Start-up mode · this device' });
+		const toggle = modeSec.createDiv({ cls: 'pm-toggle' });
 		for (const mode of MODES) {
 			const seg = toggle.createSpan({ cls: 'pm-seg', text: `${ICON[mode]} ${LABEL[mode]}` });
 			seg.toggleClass('is-active', start === mode);
-			setTooltip(seg, `${MODE_HELP[mode]}\n${TAKES_EFFECT}`, { placement: 'top' });
+			setTooltip(seg, `${MODE_HELP[mode]}\n${TAKES_EFFECT}`, { placement: 'bottom' });
 			seg.onclick = () => { if (mode !== start) void this.chooseStartMode(mode); };
 		}
-		if (start !== this.startedIn) {
-			pop.createDiv({ cls: 'pm-pop-pending', text: `Next start: ${ICON[start]} ${LABEL[start]}. This session stays ${LABEL[this.startedIn]} until you restart.` });
-		} else {
-			pop.createDiv({ cls: 'pm-pop-hint', text: `Plugins left out are never loaded, which is what saves memory. ${TAKES_EFFECT}` });
-		}
+		const pending = start !== this.startedIn;
+		const caption = modeSec.createDiv({
+			cls: `pm-pop-caption${pending ? ' is-pending' : ''}`,
+			text: pending ? `${LABEL[start]} from the next start. Restart to apply.` : 'Takes effect after restart',
+		});
+		setTooltip(caption, 'Plugins left out at start-up are never loaded, which is what saves memory. Each device keeps its own start-up mode.', { placement: 'bottom' });
 		if (start !== 'full' && !this.isFirstInList()) {
-			const warn = pop.createDiv({ cls: 'pm-pop-warn' });
-			warn.createSpan({ text: 'Plugin Memory Monitor must be first in your plugin list to load before the others. ' });
+			const warn = modeSec.createDiv({ cls: 'pm-pop-warn' });
+			warn.createSpan({ text: 'Must be first in your plugin list to load before the others. ' });
 			const fix = warn.createEl('button', { text: 'Move to top' });
 			fix.onclick = async () => { await this.moveToTop(); this.renderPopup(); };
 		}
-		const restart = pop.createEl('button', { cls: 'mod-cta pm-restart', text: `Restart in ${ICON[start]} ${LABEL[start]}` });
-		setTooltip(restart, 'Saves your open notes, then reloads Obsidian in this mode.', { placement: 'top' });
+		const restart = modeSec.createEl('button', { cls: `pm-restart${pending ? ' mod-cta' : ''}`, text: `Restart in ${ICON[start]} ${LABEL[start]}` });
+		setTooltip(restart, 'Saves your open notes, then reloads Obsidian in this mode.', { placement: 'bottom' });
 		restart.onclick = () => { this.closePopup(); void this.restartObsidian(); };
 
-		const actions = pop.createDiv({ cls: 'pm-pop-actions' });
-		const open = actions.createEl('button', { text: 'Plugin list' });
+		// This session
+		const sess = pop.createDiv({ cls: 'pm-pop-section' });
+		sess.createDiv({ cls: 'pm-pop-label', text: 'This session' });
+		const rows = sess.createDiv({ cls: 'pm-pop-rows' });
+		const row = (key: string, value: string, tip?: string) => {
+			rows.createSpan({ cls: 'pm-pop-key', text: key });
+			const v = rows.createSpan({ cls: 'pm-pop-val', text: value });
+			if (tip) setTooltip(v, tip, { placement: 'left' });
+		};
+		row('Started in', `${ICON[this.startedIn]} ${LABEL[this.startedIn]}`);
+		row('Plugins running', `🧩 ${this.running().length} of ${saved.length}`, `${saved.length} switched on in Community plugins, ${installed} installed.`);
+		if (this.skippedAtStart.length) row('Not loaded', `${this.skippedAtStart.length}`, 'Switched on, but left out at start-up by the start-up mode.');
+		// After a Standard start, anything switched on but not running failed to load.
+		const notRunning = this.startedIn === 'full' ? saved.filter((id) => !this.api.plugins[id]) : [];
+		if (notRunning.length) sess.createDiv({ cls: 'pm-pop-warn', text: `Switched on but not running: ${notRunning.map((id) => this.pluginName(id)).join(', ')}` });
+
+		// Memory
+		const memSec = pop.createDiv({ cls: 'pm-pop-section' });
+		memSec.createDiv({ cls: 'pm-pop-label', text: 'Memory' });
+		const big = memSec.createDiv({ cls: 'pm-pop-mem' });
+		const [value, unit] = m && m.source !== 'none' ? fmtMb(m.mb).split(' ') : ['?', ''];
+		big.createSpan({ cls: 'pm-pop-mem-value', text: value });
+		big.createSpan({ cls: 'pm-pop-mem-unit', text: `${unit} · Obsidian window` });
+		setTooltip(big, 'Memory used by the Obsidian window, where plugins run. Task Manager shows more because it also counts Obsidian\'s other processes.', { placement: 'left' });
+		if (m && m.heapMb !== null) memSec.createDiv({ cls: 'pm-pop-muted', text: `JavaScript heap ${fmtMb(m.heapMb)}` });
+
+		// Footer
+		const foot = pop.createDiv({ cls: 'pm-pop-footer' });
+		const open = foot.createEl('button', { text: 'Manage plugin list' });
 		setTooltip(open, 'Choose which plugins load in Standard and Lite, and load or unload a plugin for this session.', { placement: 'top' });
 		open.onclick = () => { this.closePopup(); new MonitorModal(this.app, this).open(); };
 	}
@@ -444,7 +467,7 @@ class AboutModal extends Modal {
 
 		c.createEl('h3', { text: 'Changing mode' });
 		const how = c.createEl('ul');
-		how.createEl('li', { text: 'Pick a mode under "Start Obsidian in", then click Restart. Choosing a mode changes nothing until Obsidian restarts.' });
+		how.createEl('li', { text: 'Pick a mode under "Start-up mode" at the top of the status bar popup, then click Restart. Choosing a mode changes nothing until Obsidian restarts.' });
 		how.createEl('li', { text: 'The choice is stored on this device only. Your other devices keep starting the way they are set.' });
 		how.createEl('li', { text: 'Lite and Extreme put this plugin at the top of your plugin list, so it loads before the others and can stop them loading. Only the order changes.' });
 
@@ -585,7 +608,7 @@ class MonitorSettingTab extends PluginSettingTab {
 		const p = this.plugin;
 		containerEl.empty();
 
-		new Setting(containerEl).setName('Start Obsidian in (this device)')
+		new Setting(containerEl).setName('Start-up mode (this device)')
 			.setDesc('Plugins outside this mode are never loaded at start-up, which is what saves memory. Stored on this device only. Lite and Extreme move Plugin Memory Monitor to the top of your plugin list so it loads first.')
 			.addDropdown((d) => {
 				MODES.forEach((m) => d.addOption(m, `${ICON[m]} ${LABEL[m]}`));

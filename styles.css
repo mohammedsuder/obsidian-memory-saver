@@ -10,26 +10,40 @@
 .pm-toggle .pm-seg:hover { opacity: 0.9; background: var(--background-modifier-hover); }
 .pm-toggle .pm-seg.is-active { opacity: 1; background: var(--interactive-accent); color: var(--text-on-accent); cursor: default; }
 
-/* Popup opened from the status bar */
+/* Popup opened from the status bar: header, then sections divided by rules */
 .pm-popover {
-	position: fixed; z-index: var(--layer-menu); box-sizing: border-box; width: 340px; max-width: calc(100vw - 16px);
-	padding: 10px 12px; background: var(--background-primary); color: var(--text-normal);
+	position: fixed; z-index: var(--layer-menu); box-sizing: border-box; width: 320px; max-width: calc(100vw - 16px);
+	padding: 0; overflow: hidden; background: var(--background-primary); color: var(--text-normal);
 	border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m);
-	box-shadow: var(--shadow-s); font-size: var(--font-ui-small);
+	box-shadow: var(--shadow-l); font-size: var(--font-ui-small); line-height: 1.45;
 }
-.pm-popover .pm-pop-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.pm-popover .pm-pop-title { font-weight: var(--font-semibold); }
+.pm-popover .pm-pop-head {
+	display: flex; align-items: center; justify-content: space-between;
+	padding: 10px 14px 9px; background: var(--background-secondary);
+}
+.pm-popover .pm-pop-title { font-size: var(--font-ui-medium); font-weight: var(--font-bold); }
 .pm-help { cursor: pointer; color: var(--text-muted); display: inline-flex; }
 .pm-help:hover { color: var(--text-normal); }
-.pm-popover .pm-pop-pending { margin: 4px 0 6px; color: var(--text-accent); }
-.pm-popover .pm-pop-info { margin-bottom: 8px; display: flex; flex-direction: column; gap: 3px; color: var(--text-muted); }
-.pm-popover .pm-pop-sub { margin: 8px 0 4px; font-weight: var(--font-semibold); }
-.pm-popover .pm-pop-hint { margin: 4px 0 6px; color: var(--text-faint); }
-.pm-popover .pm-pop-warn { color: var(--text-warning); }
+.pm-popover .pm-pop-section { padding: 10px 14px 12px; border-top: 1px solid var(--background-modifier-border); }
+.pm-popover .pm-pop-label {
+	margin-bottom: 7px; font-size: var(--font-ui-smaller); font-weight: var(--font-semibold);
+	text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint);
+}
+.pm-popover .pm-toggle .pm-seg { padding: 4px 6px; }
+.pm-popover .pm-pop-caption { margin-top: 6px; font-size: var(--font-ui-smaller); color: var(--text-muted); cursor: help; }
+.pm-popover .pm-pop-caption.is-pending { color: var(--text-accent); font-weight: var(--font-semibold); }
+.pm-popover .pm-restart { display: block; box-sizing: border-box; width: 100%; margin-top: 10px; }
+.pm-popover .pm-pop-rows { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+.pm-popover .pm-pop-key { color: var(--text-muted); }
+.pm-popover .pm-pop-val { text-align: right; font-weight: var(--font-medium); font-variant-numeric: tabular-nums; }
+.pm-popover .pm-pop-mem { display: flex; align-items: baseline; gap: 6px; }
+.pm-popover .pm-pop-mem-value { font-size: 1.9em; line-height: 1.1; font-weight: var(--font-semibold); font-variant-numeric: tabular-nums; }
+.pm-popover .pm-pop-mem-unit { color: var(--text-muted); }
+.pm-popover .pm-pop-muted { margin-top: 2px; font-size: var(--font-ui-smaller); color: var(--text-faint); }
+.pm-popover .pm-pop-warn { margin-top: 8px; font-size: var(--font-ui-smaller); color: var(--text-warning); }
 .pm-popover .pm-pop-warn button { margin-left: 4px; }
-.pm-popover button { box-sizing: border-box; max-width: 100%; }
-.pm-popover .pm-restart { display: block; width: 100%; margin: 4px 0 8px; }
-.pm-popover .pm-pop-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.pm-popover .pm-pop-footer { padding: 10px 14px 12px; border-top: 1px solid var(--background-modifier-border); background: var(--background-secondary); }
+.pm-popover .pm-pop-footer button { display: block; box-sizing: border-box; width: 100%; }
 
 /* Plugin list panel: only the table scrolls */
 .plugin-monitor-modal { width: min(900px, 95vw); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
