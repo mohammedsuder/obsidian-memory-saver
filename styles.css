@@ -45,26 +45,74 @@
 .pm-popover .pm-pop-footer { padding: 10px 14px 12px; border-top: 1px solid var(--background-modifier-border); background: var(--background-secondary); }
 .pm-popover .pm-pop-footer button { display: block; box-sizing: border-box; width: 100%; }
 
-/* Plugin list panel: only the table scrolls */
-.plugin-monitor-modal { width: min(900px, 95vw); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
-.plugin-monitor-modal .modal-content { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-.plugin-monitor-modal .pm-modal-head { display: flex; align-items: center; gap: 8px; }
-.plugin-monitor-modal .pm-modal-head h3 { margin: 0 0 6px; }
-.plugin-monitor-modal .pm-header { margin-bottom: 4px; }
-.plugin-monitor-modal .pm-dim { opacity: 0.45; }
-.plugin-monitor-modal .pm-note { margin-bottom: 8px; color: var(--text-muted); font-size: var(--font-ui-small); }
-.plugin-monitor-modal .pm-table-wrap { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-.plugin-monitor-modal table { width: 100%; border-collapse: collapse; font-size: var(--font-ui-small); }
-.plugin-monitor-modal th, .plugin-monitor-modal td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--background-modifier-border); }
-.plugin-monitor-modal thead th { position: sticky; top: 0; z-index: 1; background: var(--background-primary); }
-.plugin-monitor-modal .pm-actions button { margin-right: 4px; }
-.plugin-monitor-modal .pm-running { color: var(--text-success); }
-.plugin-monitor-modal .pm-session-off { color: var(--text-warning); }
-.plugin-monitor-modal .pm-off { color: var(--text-muted); }
+/* Windows (help and Manage plugin list), styled like the popup: shaded header, sections, shaded footer */
+.pm-modal {
+	padding: 0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+	font-size: var(--font-ui-small); line-height: 1.5;
+}
+.pm-about-modal { width: min(640px, 95vw); }
+.pm-list-modal { width: min(900px, 95vw); }
+.pm-modal .modal-content { display: flex; flex-direction: column; min-height: 0; overflow: hidden; padding: 0; }
+.pm-modal .pm-m-head {
+	display: flex; align-items: center; gap: 10px; padding: 14px 52px 12px 18px;
+	background: var(--background-secondary); border-bottom: 1px solid var(--background-modifier-border);
+}
+.pm-modal .pm-m-title { font-size: var(--font-ui-large); font-weight: var(--font-bold); }
+.pm-modal .pm-m-version {
+	padding: 0 6px; border-radius: var(--radius-s); background: var(--background-modifier-hover);
+	color: var(--text-muted); font-size: var(--font-ui-smaller); font-variant-numeric: tabular-nums;
+}
+.pm-modal .pm-m-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.pm-modal .pm-m-section { padding: 12px 18px 14px; border-bottom: 1px solid var(--background-modifier-border); }
+.pm-modal .pm-m-section:last-child { border-bottom: none; }
+.pm-modal .pm-m-intro .pm-m-lead { font-size: var(--font-ui-medium); font-weight: var(--font-semibold); margin-bottom: 6px; }
+.pm-modal .pm-m-text { color: var(--text-muted); }
+.pm-modal .pm-m-rows { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; }
+.pm-modal .pm-m-key { font-weight: var(--font-semibold); white-space: nowrap; }
+.pm-modal .pm-m-desc { color: var(--text-muted); }
+.pm-modal .pm-m-note { margin-top: 10px; font-size: var(--font-ui-smaller); color: var(--text-faint); }
+.pm-modal .pm-m-list { margin: 0; padding-left: 1.2em; }
+.pm-modal .pm-m-list li { margin-bottom: 4px; color: var(--text-muted); }
+.pm-modal .pm-m-list li::marker { color: var(--text-faint); }
+.pm-modal .pm-m-footer {
+	padding: 10px 18px 12px; background: var(--background-secondary); border-top: 1px solid var(--background-modifier-border);
+	color: var(--text-muted); font-size: var(--font-ui-smaller);
+}
 
-/* About window */
-.pm-about ul { padding-left: 1.2em; }
-.pm-about li { margin-bottom: 4px; }
-.pm-about .pm-about-note { color: var(--text-muted); font-size: var(--font-ui-small); }
-.pm-about .pm-about-footer { margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--background-modifier-border); color: var(--text-muted); font-size: var(--font-ui-small); }
-.pm-about .pm-about-lead { font-weight: var(--font-semibold); font-size: var(--font-ui-medium); }
+/* Section labels, shared by the popup and the windows */
+.pm-modal .pm-label {
+	margin-bottom: 8px; font-size: var(--font-ui-smaller); font-weight: var(--font-semibold);
+	text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint);
+}
+
+/* Manage plugin list: summary strip */
+.pm-list-modal .pm-m-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pm-list-modal .pm-m-stat {
+	padding: 8px 10px; border-radius: var(--radius-m); background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+}
+.pm-list-modal .pm-m-stat-value { font-size: 1.35em; font-weight: var(--font-semibold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pm-list-modal .pm-m-stat-key { margin-top: 2px; font-size: var(--font-ui-smaller); color: var(--text-muted); }
+
+/* Manage plugin list: the table scrolls inside its section */
+.pm-list-modal .pm-m-table-section { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding-bottom: 0; border-bottom: none; }
+.pm-list-modal .pm-m-table { width: 100%; border-collapse: collapse; }
+.pm-list-modal .pm-m-table th {
+	position: sticky; top: 0; z-index: 1; padding: 6px 8px; text-align: left; background: var(--background-primary);
+	font-size: var(--font-ui-smaller); font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: 0.05em;
+	color: var(--text-faint); border-bottom: 1px solid var(--background-modifier-border);
+}
+.pm-list-modal .pm-m-table td { padding: 5px 8px; border-bottom: 1px solid var(--background-modifier-border-hover, var(--background-modifier-border)); }
+.pm-list-modal .pm-m-table tbody tr:hover td { background: var(--background-modifier-hover); }
+.pm-list-modal .pm-m-name { font-weight: var(--font-medium); }
+.pm-list-modal .pm-m-check { text-align: center; }
+.pm-list-modal .pm-dim { opacity: 0.45; }
+.pm-list-modal .pm-actions { text-align: right; white-space: nowrap; }
+.pm-list-modal .pm-actions button { font-size: var(--font-ui-smaller); }
+
+/* Status badges */
+.pm-badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: var(--font-ui-smaller); white-space: nowrap; }
+.pm-badge.is-running { background: rgba(var(--color-green-rgb, 68, 207, 110), 0.16); color: var(--color-green, var(--text-success)); }
+.pm-badge.is-skipped { background: rgba(var(--color-orange-rgb, 233, 151, 63), 0.16); color: var(--color-orange, var(--text-warning)); }
+.pm-badge.is-failed { background: rgba(var(--color-red-rgb, 251, 70, 76), 0.16); color: var(--color-red, var(--text-error)); }
+.pm-badge.is-off { background: var(--background-modifier-hover); color: var(--text-muted); }

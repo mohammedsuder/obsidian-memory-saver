@@ -430,6 +430,32 @@ class ConfirmModal extends Modal {
 	}
 }
 
+// ---------- shared building blocks for the popup-style windows ----------
+
+/** A section with a small capital label, separated from the next by a rule. */
+function section(parent: HTMLElement, label: string, cls = ''): HTMLElement {
+	const s = parent.createDiv({ cls: `pm-m-section ${cls}`.trim() });
+	s.createDiv({ cls: 'pm-label', text: label });
+	return s;
+}
+
+/** Label-and-description rows, aligned in two columns. */
+function defRows(parent: HTMLElement, rows: [string, string][]) {
+	const grid = parent.createDiv({ cls: 'pm-m-rows' });
+	for (const [key, desc] of rows) {
+		grid.createDiv({ cls: 'pm-m-key', text: key });
+		grid.createDiv({ cls: 'pm-m-desc', text: desc });
+	}
+}
+
+function bullets(parent: HTMLElement, items: string[]) {
+	const ul = parent.createEl('ul', { cls: 'pm-m-list' });
+	items.forEach((text) => ul.createEl('li', { text }));
+}
+
+/** The mode help without its leading "Standard: " so it can sit beside the mode name. */
+const modeDesc = (m: Mode) => MODE_HELP[m].replace(/^\w+: /, '');
+
 /** Explains the plugin in plain language. Opened from the help icon. */
 class AboutModal extends Modal {
 	constructor(app: App, private version: string) {
@@ -437,53 +463,59 @@ class AboutModal extends Modal {
 	}
 
 	onOpen() {
+		this.modalEl.addClass('pm-modal', 'pm-about-modal');
 		const c = this.contentEl;
-		c.addClass('pm-about');
-		c.createEl('h2', { text: 'Plugin Memory Monitor' });
-		c.createEl('p', { cls: 'pm-about-lead', text: 'Save memory in Obsidian on machines with limited RAM, such as older laptops, low-memory PCs and virtual desktops.' });
-		c.createEl('p', { text: 'Every community plugin uses memory as soon as it loads, and keeps most of that memory until Obsidian restarts. Switching a plugin off during a session hands very little back. Plugin Memory Monitor saves memory the reliable way: it lets each device choose which plugins load when Obsidian starts, so the rest never load at all. The status bar shows how much memory Obsidian is using, so you can see the difference.' });
+		c.empty();
 
-		c.createEl('h3', { text: 'Saving memory' });
-		const save = c.createEl('ul');
-		save.createEl('li', { text: 'Start in 🪶 Lite day to day, and tick only the plugins you rely on every day.' });
-		save.createEl('li', { text: 'Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.' });
-		save.createEl('li', { text: 'Need a plugin briefly? Use "Load now" in the plugin list. It lasts until the next restart.' });
-		save.createEl('li', { text: 'To get memory back, restart in a lighter mode. Unloading a plugin mid-session frees little.' });
-		save.createEl('li', { text: 'Check the memory figure a few minutes after starting: plugins that index your vault push it up at first.' });
-		save.createEl('li', { text: 'Use ⛔ Extreme for the lowest memory, for example quick note-taking on a very constrained machine.' });
-		save.createEl('li', { text: 'Each device has its own start mode, so a low-memory laptop can start in Lite while a desktop syncing the same vault starts in Standard.' });
+		const head = c.createDiv({ cls: 'pm-m-head' });
+		head.createSpan({ cls: 'pm-m-title', text: 'Plugin Memory Monitor' });
+		head.createSpan({ cls: 'pm-m-version', text: this.version });
 
-		c.createEl('h3', { text: 'The status bar' });
-		const sb = c.createEl('ul');
-		sb.createEl('li', { text: 'Mode icon and name: how this Obsidian session started, 🧩 Standard, 🪶 Lite or ⛔ Extreme.' });
-		sb.createEl('li', { text: '🧩 running / switched on: community plugins loaded right now, out of those switched on in Settings → Community plugins.' });
-		sb.createEl('li', { text: 'Memory: what the Obsidian window is using. Plugins run in this window. Task Manager shows a higher total because it also counts Obsidian\'s other processes.' });
-		sb.createEl('li', { text: 'Click the status bar for the start mode, the Restart button and the plugin list.' });
+		const body = c.createDiv({ cls: 'pm-m-scroll' });
+		const intro = body.createDiv({ cls: 'pm-m-section pm-m-intro' });
+		intro.createDiv({ cls: 'pm-m-lead', text: 'Save memory in Obsidian on machines with limited RAM.' });
+		intro.createDiv({ cls: 'pm-m-text', text: 'Older laptops, low-memory PCs and virtual desktops feel the cost of every plugin. A community plugin uses memory as soon as it loads and keeps most of it until Obsidian restarts, so switching one off mid-session hands very little back. Plugin Memory Monitor lets each device choose which plugins load at start-up, so the rest never load at all.' });
 
-		c.createEl('h3', { text: 'Start modes' });
-		const modes = c.createEl('ul');
-		MODES.forEach((m) => modes.createEl('li', { text: `${ICON[m]} ${MODE_HELP[m]}` }));
-		c.createEl('p', { cls: 'pm-about-note', text: 'Only community plugins are affected. Obsidian\'s core plugins, such as Daily notes and Search, load as set in Settings → Core plugins in every mode.' });
+		bullets(section(body, 'Saving memory'), [
+			'Start in 🪶 Lite day to day, and tick only the plugins you rely on every day.',
+			'Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.',
+			'Need a plugin briefly? Use "Load now" in Manage plugin list. It lasts until the next restart.',
+			'To get memory back, restart in a lighter mode. Unloading a plugin mid-session frees little.',
+			'Check the memory figure a few minutes after starting: plugins that index your vault push it up at first.',
+			'Use ⛔ Extreme for the lowest memory, for example quick note-taking on a very constrained machine.',
+			'Each device has its own start-up mode, so a low-memory laptop can start in Lite while a desktop syncing the same vault starts in Standard.',
+		]);
 
-		c.createEl('h3', { text: 'Changing mode' });
-		const how = c.createEl('ul');
-		how.createEl('li', { text: 'Pick a mode under "Start-up mode" at the top of the status bar popup, then click Restart. Choosing a mode changes nothing until Obsidian restarts.' });
-		how.createEl('li', { text: 'The choice is stored on this device only. Your other devices keep starting the way they are set.' });
-		how.createEl('li', { text: 'Lite and Extreme put this plugin at the top of your plugin list, so it loads before the others and can stop them loading. Only the order changes.' });
+		const modes = section(body, 'Start-up modes');
+		defRows(modes, MODES.map((m) => [`${ICON[m]} ${LABEL[m]}`, modeDesc(m)] as [string, string]));
+		modes.createDiv({ cls: 'pm-m-note', text: 'Only community plugins are affected. Core plugins, such as Daily notes and Search, load as set in Settings → Core plugins in every mode.' });
 
-		c.createEl('h3', { text: 'The plugin list' });
-		const list = c.createEl('ul');
-		list.createEl('li', { text: '🧩 Standard tick: the plugin is switched on. This is the same switch as Settings → Community plugins and applies on every device.' });
-		list.createEl('li', { text: '🪶 Lite tick: the plugin also loads at a Lite start. Your Lite choices are shared across devices.' });
-		list.createEl('li', { text: '⛔ Extreme loads none of them.' });
-		list.createEl('li', { text: '"Load now" and "Unload now" affect this session only. The next start follows the start mode again.' });
+		defRows(section(body, 'Status bar'), [
+			['Mode', 'How this Obsidian session started: 🧩 Standard, 🪶 Lite or ⛔ Extreme.'],
+			['🧩 running / on', 'Community plugins running now, out of those switched on in Settings → Community plugins.'],
+			['Memory', 'Used by the Obsidian window, where plugins run. Task Manager shows more because it also counts Obsidian\'s other processes.'],
+			['Click', 'Opens the popup: start-up mode, Restart, this session, memory and Manage plugin list.'],
+		]);
 
-		c.createEl('h3', { text: 'Safe by design' });
-		const safe = c.createEl('ul');
-		safe.createEl('li', { text: 'Starting in Lite or Extreme never removes plugins from your list. A Standard start loads them all again.' });
-		safe.createEl('li', { text: 'If this plugin is removed, switched off or not first in the list, Obsidian loads your plugins as normal.' });
+		bullets(section(body, 'Changing mode'), [
+			'Pick a mode under "Start-up mode" at the top of the status bar popup, then click Restart. Nothing changes until Obsidian restarts.',
+			'The choice is stored on this device only. Your other devices keep starting the way they are set.',
+			'Lite and Extreme put this plugin at the top of your plugin list, so it loads before the others and can stop them loading. Only the order changes.',
+		]);
 
-		const foot = c.createDiv({ cls: 'pm-about-footer' });
+		defRows(section(body, 'Manage plugin list'), [
+			[`${ICON.full} Standard tick`, 'The plugin is switched on. The same switch as Settings → Community plugins; applies on every device.'],
+			[`${ICON.lite} Lite tick`, 'The plugin also loads at a Lite start. Lite choices are shared across devices.'],
+			[`${ICON.extreme} Extreme`, 'Loads none of them.'],
+			['Load / Unload now', 'This session only. The next start follows the start-up mode.'],
+		]);
+
+		bullets(section(body, 'Safe by design'), [
+			'Starting in Lite or Extreme never removes plugins from your list. A Standard start loads them all again.',
+			'If this plugin is removed, switched off or not first in the list, Obsidian loads your plugins as normal.',
+		]);
+
+		const foot = c.createDiv({ cls: 'pm-m-footer' });
 		foot.createSpan({ text: `Plugin Memory Monitor ${this.version} by ${AUTHOR} · ` });
 		foot.createEl('a', { text: 'Source and issues on GitHub', href: REPO_URL });
 	}
@@ -500,35 +532,51 @@ class MonitorModal extends Modal {
 	}
 
 	onOpen() {
-		this.modalEl.addClass('plugin-monitor-modal');
+		this.modalEl.addClass('pm-modal', 'pm-list-modal');
 		void this.render();
 	}
 
 	async render() {
 		const p = this.plugin;
 		const { contentEl } = this;
+		// Keep the table where it was when a button re-renders the window.
+		const prevScroll = contentEl.querySelector('.pm-m-scroll')?.scrollTop ?? 0;
 		contentEl.empty();
 		const m = await readMemory();
 		const running = new Set(p.running());
 		const saved = new Set(p.saved());
 		const skipped = new Set(p.skippedAtStart);
 		const lite = new Set(p.settings.liteSet);
+		const ids = Object.keys(p.api.manifests).filter((id) => id !== p.selfId);
 
-		const title = contentEl.createDiv({ cls: 'pm-modal-head' });
-		title.createEl('h3', { text: 'Plugin Memory Monitor' });
-		p.addHelpIcon(title);
-		contentEl.createDiv({
-			cls: 'pm-header',
-			text: `${ICON[p.startedIn]} Started in ${LABEL[p.startedIn]} · 🧩 ${running.size} running of ${saved.size} switched on (${Object.keys(p.api.manifests).length} installed) · ${fmtMb(m.mb)}`,
-		});
-		const note = contentEl.createDiv({ cls: 'pm-note' });
-		note.createDiv({ text: '🧩 Standard loads every plugin ticked under Standard. This is the same switch as Settings → Community plugins and applies on every device.' });
-		note.createDiv({ text: '🪶 Lite loads only the plugins ticked under both Standard and Lite.' });
-		note.createDiv({ text: '⛔ Extreme loads none of them, only this monitor.' });
-		note.createDiv({ text: '"Now" is this session. "Load now" and "Unload now" last until Obsidian restarts.' });
+		const head = contentEl.createDiv({ cls: 'pm-m-head' });
+		head.createSpan({ cls: 'pm-m-title', text: 'Manage plugin list' });
+		p.addHelpIcon(head);
 
-		// Only the table scrolls; title and close button stay in place.
-		const table = contentEl.createDiv({ cls: 'pm-table-wrap' }).createEl('table');
+		// Summary strip, like the popup's This session and Memory.
+		const stats = section(contentEl, 'This session').createDiv({ cls: 'pm-m-stats' });
+		const stat = (key: string, value: string, tip?: string) => {
+			const s = stats.createDiv({ cls: 'pm-m-stat' });
+			s.createDiv({ cls: 'pm-m-stat-value', text: value });
+			s.createDiv({ cls: 'pm-m-stat-key', text: key });
+			if (tip) setTooltip(s, tip, { placement: 'bottom' });
+		};
+		stat('Started in', `${ICON[p.startedIn]} ${LABEL[p.startedIn]}`);
+		stat('Running', `${running.size} of ${saved.size}`, `${saved.size} switched on in Community plugins, ${ids.length + 1} installed.`);
+		stat('Not loaded', `${skipped.size}`, 'Switched on, but left out at start-up by the start-up mode.');
+		stat('Memory', m.source === 'none' ? '?' : fmtMb(m.mb), 'Used by the Obsidian window, where plugins run.');
+
+		defRows(section(contentEl, 'How the start-up modes use this list'), [
+			[`${ICON.full} Standard`, 'Loads every plugin ticked under Standard. The same switch as Settings → Community plugins; applies on every device.'],
+			[`${ICON.lite} Lite`, 'Loads only plugins ticked under both Standard and Lite. Lite choices are shared across devices.'],
+			[`${ICON.extreme} Extreme`, 'Loads none of them, only this monitor.'],
+			['Load / Unload now', 'This session only, until Obsidian restarts.'],
+		]);
+
+		// Only the table scrolls; the header, summary and footer stay in place.
+		const plugSec = section(contentEl, `Plugins · ${ids.length} installed`, 'pm-m-table-section');
+		const scroll = plugSec.createDiv({ cls: 'pm-m-scroll' });
+		const table = scroll.createEl('table', { cls: 'pm-m-table' });
 		const hr = table.createEl('thead').createEl('tr');
 		const headers: [string, string][] = [
 			['Plugin', ''],
@@ -542,20 +590,20 @@ class MonitorModal extends Modal {
 			if (tip) setTooltip(th, tip, { placement: 'top' });
 		});
 		const body = table.createEl('tbody');
-		const ids = Object.keys(p.api.manifests).filter((id) => id !== p.selfId);
 		ids.sort((a, b) => Number(running.has(b)) - Number(running.has(a)) || Number(saved.has(b)) - Number(saved.has(a)) || p.pluginName(a).localeCompare(p.pluginName(b)));
 
 		for (const id of ids) {
 			const tr = body.createEl('tr');
-			tr.createEl('td', { text: p.pluginName(id) });
-			const status = running.has(id) ? ['Running', 'pm-running']
-				: skipped.has(id) ? ['Not loaded', 'pm-session-off']
-					: saved.has(id) ? ['Not running', 'pm-session-off'] : ['Off', 'pm-off'];
-			const nowTd = tr.createEl('td', { text: status[0], cls: status[1] });
-			if (skipped.has(id)) setTooltip(nowTd, `Switched on, but not loaded because this session started in ${LABEL[p.startedIn]}.`, { placement: 'top' });
+			tr.createEl('td', { cls: 'pm-m-name', text: p.pluginName(id) });
+			const status = running.has(id) ? ['Running', 'is-running']
+				: skipped.has(id) ? ['Not loaded', 'is-skipped']
+					: saved.has(id) ? ['Not running', 'is-failed'] : ['Off', 'is-off'];
+			const badge = tr.createEl('td').createSpan({ cls: `pm-badge ${status[1]}`, text: status[0] });
+			if (skipped.has(id)) setTooltip(badge, `Switched on, but not loaded because this session started in ${LABEL[p.startedIn]}.`, { placement: 'top' });
+			else if (status[1] === 'is-failed') setTooltip(badge, 'Switched on, but it did not load. Check Settings → Community plugins.', { placement: 'top' });
 
 			// Standard = Obsidian's own on/off switch for the plugin (saved, all devices).
-			const std = tr.createEl('td').createEl('input', { type: 'checkbox' });
+			const std = tr.createEl('td', { cls: 'pm-m-check' }).createEl('input', { type: 'checkbox' });
 			std.checked = saved.has(id);
 			setTooltip(std, std.checked ? 'Switched on. Untick to switch it off on every device.' : 'Tick to switch it on (loads now, and at every Standard start).', { placement: 'top' });
 			std.onchange = async () => {
@@ -570,7 +618,7 @@ class MonitorModal extends Modal {
 				}
 			};
 
-			const liteTd = tr.createEl('td');
+			const liteTd = tr.createEl('td', { cls: 'pm-m-check' });
 			const cb = liteTd.createEl('input', { type: 'checkbox' });
 			cb.checked = lite.has(id);
 			if (!saved.has(id)) liteTd.addClass('pm-dim');
@@ -587,10 +635,15 @@ class MonitorModal extends Modal {
 				off.onclick = async () => { await p.api.disablePlugin(id); void p.refresh(); void this.render(); };
 			} else {
 				const on = act.createEl('button', { text: 'Load now' });
-				setTooltip(on, 'Loads it for this session only. The next start follows the start mode.', { placement: 'top' });
+				setTooltip(on, 'Loads it for this session only. The next start follows the start-up mode.', { placement: 'top' });
 				on.onclick = async () => { await p.api.enablePlugin(id); void p.refresh(); void this.render(); };
 			}
 		}
+
+		const start = p.startMode();
+		const foot = contentEl.createDiv({ cls: 'pm-m-footer' });
+		foot.setText(`Start-up mode on this device: ${ICON[start]} ${LABEL[start]} · takes effect after restart`);
+		scroll.scrollTop = prevScroll;
 	}
 
 	onClose() {
