@@ -19,6 +19,8 @@ if (mode === 'test') {
 	const ctx = await esbuild.context({
 		entryPoints: ['src/main.ts'], bundle: true, external, format: 'cjs', target: 'es2020',
 		outfile: 'main.js', logLevel: 'info', treeShaking: true,
+		// Release installs only receive main.js, manifest.json and styles.css, so images are bundled in.
+		loader: { '.webp': 'dataurl' },
 		sourcemap: mode === 'watch' ? 'inline' : false,
 	});
 	if (mode === 'watch') await ctx.watch();

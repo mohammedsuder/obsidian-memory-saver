@@ -1,5 +1,7 @@
 # Plugin Memory Monitor
 
+<a href="https://ko-fi.com/mohsu"><img src="docs/images/support-me-on-kofi.webp" alt="Support me on Ko-fi" height="36"></a>
+
 **Save memory in Obsidian on resource-constrained machines.** Older laptops, low-RAM PCs and shared or virtual desktops feel the cost of every Obsidian plugin. Plugin Memory Monitor lets each device start Obsidian with only the plugins it needs, so the rest never load and never use memory. It also shows Obsidian's memory and plugin count in the status bar, so you can see the effect.
 
 | Start mode | What loads at start-up | Memory |
@@ -88,6 +90,8 @@ Built with Obsidian API 1.14.4, TypeScript 7.0.2, esbuild 0.28.2, Node 24.
 ## Author
 
 Mohammed Ilyas Suder · [github.com/mohammedsuder](https://github.com/mohammedsuder)
+
+I love building creative, practical software. If Plugin Memory Monitor saves you memory, you can support it on [Ko-fi](https://ko-fi.com/mohsu): contributions make further free, useful software possible.
 
 ## Licence
 

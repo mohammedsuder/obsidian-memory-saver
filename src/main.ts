@@ -1,6 +1,7 @@
 import { App, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, setIcon, setTooltip } from 'obsidian';
 import { Mode, moveToFront, sameSession, startupPlan } from './modes';
 import { MemoryReading, fmtMb, readMemory } from './memory';
+import kofiBadge from '../docs/images/support-me-on-kofi.webp';
 
 /**
  * Obsidian's plugin manager (app.plugins). Not in the public API; behaviour verified against Obsidian 1.14.4
@@ -56,6 +57,7 @@ const TAKES_EFFECT = 'Takes effect when Obsidian restarts; nothing changes until
 const SETTLE_HINT = 'Settles 1-2 minutes after start-up';
 const AUTHOR = 'Mohammed Ilyas Suder';
 const REPO_URL = 'https://github.com/mohammedsuder/obsidian-plugin-memory-monitor';
+const KOFI_URL = 'https://ko-fi.com/mohsu';
 /** Same for every load of this plugin within one Obsidian window session; changes when Obsidian restarts. */
 const SESSION_ID = performance.timeOrigin;
 
@@ -520,9 +522,14 @@ class AboutModal extends Modal {
 			'If this plugin is removed, switched off or not first in the list, Obsidian loads your plugins as normal.',
 		]);
 
-		const foot = c.createDiv({ cls: 'pm-m-footer' });
-		foot.createSpan({ text: `Plugin Memory Monitor ${this.version} by ${AUTHOR} · ` });
-		foot.createEl('a', { text: 'Source and issues on GitHub', href: REPO_URL });
+		const foot = c.createDiv({ cls: 'pm-m-footer pm-m-footer-split' });
+		const credit = foot.createDiv({ cls: 'pm-m-credit' });
+		credit.createSpan({ text: `Plugin Memory Monitor ${this.version} by ${AUTHOR} · ` });
+		credit.createEl('a', { text: 'Source and issues on GitHub', href: REPO_URL });
+		// Badge is bundled into main.js, so nothing is fetched from the internet; the link opens in the browser.
+		const kofi = foot.createEl('a', { cls: 'pm-kofi', href: KOFI_URL });
+		kofi.createEl('img', { attr: { src: kofiBadge, alt: 'Support me on Ko-fi' } });
+		setTooltip(kofi, 'Contributions help make more free, useful software possible.', { placement: 'top' });
 	}
 
 	onClose() {
