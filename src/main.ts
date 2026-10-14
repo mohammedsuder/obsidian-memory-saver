@@ -53,6 +53,7 @@ const MODE_HELP: Record<Mode, string> = {
 	extreme: 'Extreme: start with no plugins except this monitor. Uses the least memory. Plugin features are unavailable until you restart in Standard or use "Load now" in the plugin list.',
 };
 const TAKES_EFFECT = 'Takes effect when Obsidian restarts; nothing changes until then.';
+const SETTLE_HINT = 'Settles 1-2 minutes after start-up';
 const AUTHOR = 'Mohammed Suder';
 const REPO_URL = 'https://github.com/mohammedsuder/obsidian-plugin-memory-monitor';
 /** Same for every load of this plugin within one Obsidian window session; changes when Obsidian restarts. */
@@ -389,8 +390,12 @@ export default class PluginMonitor extends Plugin {
 		const [value, unit] = m && m.source !== 'none' ? fmtMb(m.mb).split(' ') : ['?', ''];
 		big.createSpan({ cls: 'pm-pop-mem-value', text: value });
 		big.createSpan({ cls: 'pm-pop-mem-unit', text: `${unit} · Obsidian window` });
-		setTooltip(big, 'Memory used by the Obsidian window, where plugins run. Task Manager shows more because it also counts Obsidian\'s other processes.', { placement: 'left' });
+		setTooltip(big, `Memory used by the Obsidian window, where plugins run. Task Manager shows more because it also counts Obsidian's other processes. ${SETTLE_HINT}.`, { placement: 'left' });
 		if (m && m.heapMb !== null) memSec.createDiv({ cls: 'pm-pop-muted', text: `JavaScript heap ${fmtMb(m.heapMb)}` });
+		const settle = memSec.createDiv({ cls: 'pm-pop-settle' });
+		setIcon(settle.createSpan({ cls: 'pm-pop-settle-icon' }), 'timer');
+		settle.createSpan({ text: SETTLE_HINT });
+		setTooltip(settle, 'Plugins that index your vault do most of their work just after start-up, so early readings run high. Compare modes once the figure has settled.', { placement: 'left' });
 
 		// Footer
 		const foot = pop.createDiv({ cls: 'pm-pop-footer' });
@@ -564,7 +569,7 @@ class MonitorModal extends Modal {
 		stat('Started in', `${ICON[p.startedIn]} ${LABEL[p.startedIn]}`);
 		stat('Running', `${running.size} of ${saved.size}`, `${saved.size} switched on in Community plugins, ${ids.length + 1} installed.`);
 		stat('Not loaded', `${skipped.size}`, 'Switched on, but left out at start-up by the start-up mode.');
-		stat('Memory', m.source === 'none' ? '?' : fmtMb(m.mb), 'Used by the Obsidian window, where plugins run.');
+		stat('Memory', m.source === 'none' ? '?' : fmtMb(m.mb), `Used by the Obsidian window, where plugins run. ${SETTLE_HINT}.`);
 
 		defRows(section(contentEl, 'How the start-up modes use this list'), [
 			[`${ICON.full} Standard`, 'Loads every plugin ticked under Standard. The same switch as Settings → Community plugins; applies on every device.'],

@@ -116,3 +116,6 @@
 .pm-badge.is-skipped { background: rgba(var(--color-orange-rgb, 233, 151, 63), 0.16); color: var(--color-orange, var(--text-warning)); }
 .pm-badge.is-failed { background: rgba(var(--color-red-rgb, 251, 70, 76), 0.16); color: var(--color-red, var(--text-error)); }
 .pm-badge.is-off { background: var(--background-modifier-hover); color: var(--text-muted); }
+.pm-popover .pm-pop-settle { display: flex; align-items: center; gap: 5px; margin-top: 6px; font-size: var(--font-ui-smaller); color: var(--text-faint); cursor: help; }
+.pm-popover .pm-pop-settle-icon { display: inline-flex; }
+.pm-popover .pm-pop-settle-icon svg { width: 13px; height: 13px; }
