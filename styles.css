@@ -119,3 +119,12 @@
 .pm-popover .pm-pop-settle { display: flex; align-items: center; gap: 5px; margin-top: 6px; font-size: var(--font-ui-smaller); color: var(--text-faint); cursor: help; }
 .pm-popover .pm-pop-settle-icon { display: inline-flex; }
 .pm-popover .pm-pop-settle-icon svg { width: 13px; height: 13px; }
+
+/* Collapsible section (Manage plugin list: how the start-up modes use this list) */
+.pm-modal .pm-m-collapsible summary { display: flex; align-items: center; gap: 6px; margin-bottom: 0; cursor: pointer; list-style: none; user-select: none; }
+.pm-modal .pm-m-collapsible summary::-webkit-details-marker { display: none; }
+.pm-modal .pm-m-collapsible summary:hover { color: var(--text-muted); }
+.pm-modal .pm-m-collapsible .pm-m-chevron { display: inline-flex; transition: transform 120ms ease; }
+.pm-modal .pm-m-collapsible .pm-m-chevron svg { width: 13px; height: 13px; }
+.pm-modal .pm-m-collapsible details[open] .pm-m-chevron { transform: rotate(90deg); }
+.pm-modal .pm-m-collapsible details[open] summary { margin-bottom: 8px; }

@@ -532,6 +532,9 @@ class AboutModal extends Modal {
 
 /** Plugin list: what loads in Standard and Lite, and loading or unloading a plugin for this session. */
 class MonitorModal extends Modal {
+	/** Whether the "How the start-up modes use this list" section is expanded. Collapsed each time the window opens. */
+	private howOpen = false;
+
 	constructor(app: App, private plugin: PluginMonitor) {
 		super(app);
 	}
@@ -571,7 +574,14 @@ class MonitorModal extends Modal {
 		stat('Not loaded', `${skipped.size}`, 'Switched on, but left out at start-up by the start-up mode.');
 		stat('Memory', m.source === 'none' ? '?' : fmtMb(m.mb), `Used by the Obsidian window, where plugins run. ${SETTLE_HINT}.`);
 
-		defRows(section(contentEl, 'How the start-up modes use this list'), [
+		// Collapsible explanation, collapsed by default to leave room for the table.
+		const how = contentEl.createDiv({ cls: 'pm-m-section pm-m-collapsible' }).createEl('details');
+		how.open = this.howOpen;
+		how.ontoggle = () => { this.howOpen = how.open; };
+		const summary = how.createEl('summary', { cls: 'pm-label pm-m-summary' });
+		setIcon(summary.createSpan({ cls: 'pm-m-chevron' }), 'chevron-right');
+		summary.createSpan({ text: 'How the start-up modes use this list' });
+		defRows(how, [
 			[`${ICON.full} Standard`, 'Loads every plugin ticked under Standard. The same switch as Settings → Community plugins; applies on every device.'],
 			[`${ICON.lite} Lite`, 'Loads only plugins ticked under both Standard and Lite. Lite choices are shared across devices.'],
 			[`${ICON.extreme} Extreme`, 'Loads none of them, only this monitor.'],
