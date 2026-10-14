@@ -1,0 +1,24 @@
+{
+  "name": "obsidian-plugin-memory-monitor",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Obsidian plugin: memory and plugin count in the status bar, and per-device Standard, Lite and Extreme start modes so plugins you do not need never load.",
+  "scripts": {
+    "dev": "node esbuild.config.mjs watch",
+    "build": "tsc --noEmit && node esbuild.config.mjs production",
+    "test": "node esbuild.config.mjs test && node --test \"build-test/*.test.mjs\"",
+    "install-vault": "node scripts/install-vault.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "obsidian": "^1.14.4",
+    "typescript": "^7.0.2"
+  },
+  "author": "Mohammed Suder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohammedsuder/obsidian-plugin-memory-monitor"
+  },
+  "license": "MIT"
+}

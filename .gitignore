@@ -1,0 +1,12 @@
+node_modules/
+main.js
+build-test/
+*.map
+
+# prepare-commit working files
+commit-msg.txt
+commit-messages/
+logs/
+
+# local vault path for npm run install-vault
+.vault-path
