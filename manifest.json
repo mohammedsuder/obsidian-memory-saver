@@ -4,7 +4,7 @@
   "version": "0.3.1",
   "minAppVersion": "1.8.7",
   "description": "Save memory on resource-constrained machines: choose which community plugins load when Obsidian starts, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
-  "author": "Mohammed Suder",
+  "author": "Mohammed Ilyas Suder",
   "isDesktopOnly": true,
   "authorUrl": "https://github.com/mohammedsuder"
 }

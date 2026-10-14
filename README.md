@@ -87,7 +87,7 @@ Built with Obsidian API 1.14.4, TypeScript 7.0.2, esbuild 0.28.2, Node 24.
 
 ## Author
 
-Mohammed Suder · [github.com/mohammedsuder](https://github.com/mohammedsuder)
+Mohammed Ilyas Suder · [github.com/mohammedsuder](https://github.com/mohammedsuder)
 
 ## Licence
 
