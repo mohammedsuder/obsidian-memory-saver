@@ -4,10 +4,10 @@
 
 **Save memory in Obsidian on resource-constrained machines.** Older laptops, low-RAM PCs and shared or virtual desktops feel the cost of every Obsidian plugin. Memory Saver lets each device start Obsidian with only the plugins it needs, so the rest never load and never use memory. It also shows Obsidian's memory and plugin count in the status bar, so you can see the effect.
 
-| 🧩 Standard start | ⛔ Extreme start |
-|:---:|:---:|
-| <img src="docs/images/popup-standard.png" width="300" alt="Status bar popup after a Standard start: 34 of 35 plugins running, 842 MB window memory, 191 MB JavaScript heap"> | <img src="docs/images/popup-extreme.png" width="300" alt="Status bar popup after an Extreme start: 1 of 35 plugins running, 34 not loaded, 288 MB window memory, 43 MB JavaScript heap"> |
-| 34 of 35 plugins running · **842 MB** | 1 of 35 plugins running · **288 MB** |
+| 🧩 Standard start | 🪶 Lite start | ⛔ Extreme start |
+|:---:|:---:|:---:|
+| <img src="docs/images/popup-standard.png" width="240" alt="Status bar popup after a Standard start: 34 of 35 plugins running, 842 MB window memory, 191 MB JavaScript heap"> | <img src="docs/images/popup-lite.png" width="240" alt="Status bar popup after a Lite start: 9 of 35 plugins running, 26 not loaded, 350 MB window memory, 94 MB JavaScript heap"> | <img src="docs/images/popup-extreme.png" width="240" alt="Status bar popup after an Extreme start: 1 of 35 plugins running, 34 not loaded, 288 MB window memory, 43 MB JavaScript heap"> |
+| 34 of 35 plugins running · **842 MB** | 9 of 35 plugins running · **350 MB** | 1 of 35 plugins running · **288 MB** |
 
 *The status bar popup on the same machine and vault, each read after memory had settled. Click the status bar to open it.*
 
