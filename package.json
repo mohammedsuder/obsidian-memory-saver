@@ -1,6 +1,6 @@
 {
   "name": "obsidian-memory-saver",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Memory Saver for Obsidian: save memory on resource-constrained machines by choosing which community plugins load at start-up, per device (Standard, Lite or Extreme).",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Mohammed Ilyas Suder",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mohammedsuder/obsidian-plugin-memory-monitor"
+    "url": "https://github.com/mohammedsuder/obsidian-memory-saver"
   },
   "license": "MIT"
 }

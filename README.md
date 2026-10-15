@@ -72,6 +72,7 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 ## Notes
 
 - The plugin id is `memory-saver`. Versions up to 0.3.1 were called Plugin Memory Monitor, with the id `plugin-monitor`.
+- This repository was called `obsidian-plugin-memory-monitor` up to 0.4.0. Old links and BRAT entries redirect here.
 - Desktop only. It relies on Obsidian internals that are not part of the public API (`app.plugins`, the order of `community-plugins.json`), so an Obsidian update could change its behaviour. If that happens, the fail-safe above applies.
 
 ## Install
@@ -82,8 +83,8 @@ The plugin was renamed and its id changed in 0.4.0, so Obsidian treats it as a n
 
 Requires Obsidian 1.8.7 or later on desktop. Tested on Obsidian 1.14.4.
 
-- **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-plugin-memory-monitor/releases/latest), put them in `<your vault>/.obsidian/plugins/memory-saver/`, then switch the plugin on in Settings → Community plugins.
-- **With BRAT:** add `mohammedsuder/obsidian-plugin-memory-monitor` as a beta plugin.
+- **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-memory-saver/releases/latest), put them in `<your vault>/.obsidian/plugins/memory-saver/`, then switch the plugin on in Settings → Community plugins.
+- **With BRAT:** add `mohammedsuder/obsidian-memory-saver` as a beta plugin.
 - **From source:** build it (below) and copy the same three files.
 
 ## Build, test, install into a vault

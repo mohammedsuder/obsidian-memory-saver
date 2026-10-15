@@ -58,7 +58,7 @@ const MODE_HELP: Record<Mode, string> = {
 const TAKES_EFFECT = 'Takes effect when Obsidian restarts; nothing changes until then.';
 const SETTLE_HINT = 'Settles 1-2 minutes after start-up';
 const AUTHOR = 'Mohammed Ilyas Suder';
-const REPO_URL = 'https://github.com/mohammedsuder/obsidian-plugin-memory-monitor';
+const REPO_URL = 'https://github.com/mohammedsuder/obsidian-memory-saver';
 const KOFI_URL = 'https://ko-fi.com/mohsu';
 /** Same for every load of this plugin within one Obsidian window session; changes when Obsidian restarts. */
 const SESSION_ID = performance.timeOrigin;
