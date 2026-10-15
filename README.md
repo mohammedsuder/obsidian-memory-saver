@@ -84,6 +84,7 @@ The plugin was renamed and its id changed in 0.4.0, so Obsidian treats it as a n
 
 Requires Obsidian 1.13.0 or later on desktop (0.4.1 is the last version for older Obsidian). Tested on Obsidian 1.14.4.
 
+- **From Obsidian (recommended):** Settings → Community plugins → Browse, search for **Memory Saver**, then Install and Enable. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/memory-saver).
 - **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-memory-saver/releases/latest), put them in `<your vault>/.obsidian/plugins/memory-saver/`, then switch the plugin on in Settings → Community plugins.
 - **With BRAT:** add `mohammedsuder/obsidian-memory-saver` as a beta plugin.
 - **From source:** build it (below) and copy the same three files.
