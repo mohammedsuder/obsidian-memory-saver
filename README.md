@@ -6,8 +6,8 @@
 
 | 🧩 Standard start | ⛔ Extreme start |
 |:---:|:---:|
-| <img src="docs/images/popup-standard.png" width="300" alt="Status bar popup after a Standard start: 34 of 35 plugins running, 863 MB window memory, 191 MB JavaScript heap"> | <img src="docs/images/popup-extreme.png" width="300" alt="Status bar popup after an Extreme start: 1 of 35 plugins running, 34 not loaded, 229 MB window memory, 37 MB JavaScript heap"> |
-| 34 of 35 plugins running · **863 MB** | 1 of 35 plugins running · **229 MB** |
+| <img src="docs/images/popup-standard.png" width="300" alt="Status bar popup after a Standard start: 34 of 35 plugins running, 842 MB window memory, 191 MB JavaScript heap"> | <img src="docs/images/popup-extreme.png" width="300" alt="Status bar popup after an Extreme start: 1 of 35 plugins running, 34 not loaded, 229 MB window memory, 37 MB JavaScript heap"> |
+| 34 of 35 plugins running · **842 MB** | 1 of 35 plugins running · **229 MB** |
 
 *The status bar popup on the same machine and vault, each read after memory had settled. Click the status bar to open it.*
 
