@@ -6,5 +6,6 @@
   "description": "Save memory on resource-constrained machines: choose which community plugins load at start-up, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
   "author": "Mohammed Ilyas Suder",
   "isDesktopOnly": true,
-  "authorUrl": "https://github.com/mohammedsuder"
+  "authorUrl": "https://github.com/mohammedsuder",
+  "fundingUrl": "https://ko-fi.com/mohsu"
 }

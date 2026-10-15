@@ -52,7 +52,7 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 - **Click the status bar** for the popup: the **Start-up mode** switch at the top (hover each mode for what it does) with **Restart in …**, then this session (how it started, plugins running, what was not loaded), memory, and **Manage plugin list**. The help icon explains everything in the app.
 - **Choosing a start mode changes nothing until Obsidian restarts.** Until then the popup shows the mode that applies from the next start. The choice is stored on this device only.
 - **Plugin list:** what is running now, a 🧩 Standard tick (the same switch as Settings → Community plugins, so it applies on every device; unticking asks first), a 🪶 Lite tick, and **Load now** / **Unload now** for the current session only.
-- **Settings → Memory Saver:** start-up mode, how often memory is read, and the Lite plugins. Start-up mode and the refresh interval show up in Obsidian's settings search.
+- **Settings → Memory Saver:** start-up mode, how often memory is read, **Reset to suggested** for Lite and a shortcut to **Manage plugin list**, where Lite choices are made. Start-up mode and the refresh interval show up in Obsidian's settings search.
 - Commands: Restart Obsidian in Standard / Lite / Extreme mode (this device), Open plugin list, Move to the top of the plugin list.
 
 ## How a Lite or Extreme start works

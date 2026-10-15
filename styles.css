@@ -129,8 +129,8 @@
 .pm-modal .pm-m-collapsible details[open] .pm-m-chevron { transform: rotate(90deg); }
 .pm-modal .pm-m-collapsible details[open] summary { margin-bottom: 8px; }
 
-/* Help window footer: credit line, then the Ko-fi badge */
+/* Help window footer: credit line, then the Ko-fi badge (the badge is also in the settings tab) */
 .pm-modal .pm-m-footer-split { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.pm-modal .pm-kofi { display: inline-flex; line-height: 0; }
-.pm-modal .pm-kofi img { height: 30px; width: auto; }
-.pm-modal .pm-kofi:hover img { filter: brightness(1.05); }
+.pm-kofi { display: inline-flex; line-height: 0; }
+.pm-kofi img { height: 30px; width: auto; }
+.pm-kofi:hover img { filter: brightness(1.05); }

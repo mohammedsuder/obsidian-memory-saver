@@ -673,13 +673,11 @@ class MonitorModal extends Modal {
 	}
 }
 
-/** Settings key for each plugin's Lite toggle: `lite:<plugin id>`. */
-const LITE_KEY = 'lite:';
-
 /**
  * Declarative settings (Obsidian 1.13.0 and later), so they appear in Obsidian's settings search. Values live in
- * two places, the start-up mode in this device's local storage and the rest in data.json, so this tab reads and
- * writes them itself instead of using the default `plugin.settings` binding.
+ * two places, the start-up mode in this device's local storage and the refresh interval in data.json, so this tab
+ * reads and writes them itself instead of using the default `plugin.settings` binding. Lite choices are made in
+ * Manage plugin list only, which shows them beside each plugin's status.
  */
 class MonitorSettingTab extends PluginSettingTab {
 	constructor(app: App, private plugin: PluginMonitor) {
@@ -688,8 +686,6 @@ class MonitorSettingTab extends PluginSettingTab {
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
 		const p = this.plugin;
-		const others = Object.keys(p.api.manifests).filter((id) => id !== p.selfId)
-			.sort((a, b) => p.pluginName(a).localeCompare(p.pluginName(b)));
 		return [
 			{
 				name: 'Start-up mode (this device)',
@@ -707,23 +703,36 @@ class MonitorSettingTab extends PluginSettingTab {
 				heading: 'Lite plugins',
 				items: [
 					{
-						name: 'Choose what loads in Lite',
-						desc: 'Plugins that load when Obsidian starts in Lite. Shared across your devices. A plugin only loads if it is also switched on (ticked under Standard in the plugin list). The same choices appear in the plugin list.',
+						name: 'Choose which plugins load in Lite',
+						desc: `Tick plugins under ${ICON.lite} Lite in Manage plugin list. Lite choices are shared across your devices, and a plugin only loads in Lite if it is also switched on.`,
+						aliases: ['Plugin list', 'Lite'],
 						render: (setting) => {
-							setting.addButton((b) => b.setButtonText('Reset to suggested').onClick(async () => {
-								p.settings.liteSet = [...SUGGESTED_LITE];
-								await p.saveSettings();
-								this.update();
-							}));
+							setting
+								.addButton((b) => b.setButtonText('Reset to suggested').onClick(async () => {
+									p.settings.liteSet = [...SUGGESTED_LITE];
+									await p.saveSettings();
+									new Notice('Lite plugins reset to the suggested set.');
+								}))
+								.addButton((b) => b.setButtonText('Manage plugin list').setCta()
+									.onClick(() => new MonitorModal(this.app, p).open()));
 						},
 					},
-					// Left out of settings search: a row named after another plugin would look like that plugin's settings.
-					...others.map((id) => ({
-						name: p.pluginName(id),
-						desc: `${id}${p.api.enabledPlugins.has(id) ? '' : ' · not switched on'}`,
+				],
+			},
+			{
+				type: 'group',
+				heading: 'Support',
+				items: [
+					{
+						name: 'Ko-fi',
+						desc: 'If Memory Saver saves you memory, you can support it. Contributions help make more free, useful software possible.',
 						searchable: false,
-						control: { type: 'toggle' as const, key: `${LITE_KEY}${id}` },
-					})),
+						render: (setting) => {
+							// Badge is bundled into main.js, so nothing is fetched from the internet; the link opens in the browser.
+							const kofi = setting.controlEl.createEl('a', { cls: 'pm-kofi', href: KOFI_URL });
+							kofi.createEl('img', { attr: { src: kofiBadge, alt: 'Support me on Ko-fi' } });
+						},
+					},
 				],
 			},
 		];
@@ -733,7 +742,6 @@ class MonitorSettingTab extends PluginSettingTab {
 		const p = this.plugin;
 		if (key === 'startMode') return p.startMode();
 		if (key === 'refreshSeconds') return p.settings.refreshSeconds;
-		if (key.startsWith(LITE_KEY)) return p.settings.liteSet.includes(key.slice(LITE_KEY.length));
 		return undefined;
 	}
 
@@ -746,11 +754,6 @@ class MonitorSettingTab extends PluginSettingTab {
 			p.settings.refreshSeconds = value;
 			await p.saveSettings();
 			p.startRefresh();
-		} else if (key.startsWith(LITE_KEY) && typeof value === 'boolean') {
-			const id = key.slice(LITE_KEY.length);
-			const others = p.settings.liteSet.filter((x) => x !== id);
-			p.settings.liteSet = value ? [...others, id] : others;
-			await p.saveSettings();
 		}
 	}
 }
