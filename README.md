@@ -21,19 +21,19 @@ Each device keeps its own start mode: a low-RAM laptop can start in Lite every d
 
 ## Why start-up matters
 
-Obsidian runs on Electron (Chromium). A community plugin uses memory as soon as it loads, and once loaded it keeps most of that memory until Obsidian restarts: switching a plugin off during a session hands very little back to the system. The only reliable way to save that memory is not to load the plugin in the first place, which is what the start modes do.
+Obsidian runs on Electron (Chromium). A community plugin uses memory as soon as it loads, and once loaded it keeps most of that memory until Obsidian restarts: switching a plugin off during a session hands very little back to the system. In one test, unloading every community plugin except Memory Saver from a running session took the window from 1009 MB to 976 MB, about 3%, even after forcing garbage collection. The only reliable way to save that memory is not to load the plugin in the first place, which is what the start modes do.
 
 ## How much can it save?
 
-It depends on which plugins you use. Measured in one vault with about 35 community plugins, Obsidian 1.14.4 on Windows:
+It depends on which plugins you use and what you have open. These are the readings shown in the screenshots above: one Windows PC, Obsidian 1.14.4, a vault with 35 community plugins switched on, each read 2 to 3 minutes after start-up once memory had settled.
 
-| | Window memory | JavaScript heap |
-|---|---|---|
-| Standard start | 446 MB | 177 MB |
-| Lite start (8 plugins) | **295 MB (about a third less)** | **90 MB (about half)** |
-| Switching from Standard to Extreme during a session, for comparison | 1009 MB → 976 MB | |
+| Start mode | Plugins running | Window memory | JavaScript heap |
+|---|---|---|---|
+| 🧩 Standard | 34 of 35 (one fails to load in this vault) | 842 MB | 191 MB |
+| 🪶 Lite | 9 of 35 (the 8 ticked for Lite, plus Memory Saver) | 350 MB, **58% less** | 94 MB, **51% less** |
+| ⛔ Extreme | 1 of 35 (Memory Saver) | 288 MB, **66% less** | 43 MB, **77% less** |
 
-In the same vault, Obsidian settled at about 370 MB with no community plugins at all (Restricted mode), against roughly 590 to 950 MB with all of them, so the plugins accounted for roughly 220 to 580 MB.
+Readings differ between restarts in the same mode (Extreme has read between 229 and 288 MB on this machine), so treat them as an example of the difference, not a guarantee.
 
 ## Tips for saving the most memory
 
