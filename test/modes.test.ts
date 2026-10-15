@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { moveToFront, sameSession, startupPlan, targetSet } from '../src/modes';
+import { initialLiteSet, moveToFront, sameSession, startupPlan, targetSet } from '../src/modes';
 
 const SELF = 'plugin-monitor';
 const LITE = ['tasks', 'dataview', 'was-off'];
@@ -52,4 +52,21 @@ test('same session only when the session id matches', () => {
 	assert.equal(sameSession({ sessionId: 1234.5 }, 1234.5), true);
 	assert.equal(sameSession({ sessionId: 1234.5 }, 9999.1), false);
 	assert.equal(sameSession({}, 1234.5), false);
+});
+
+test('a saved Lite set is kept as it is, even when empty', () => {
+	assert.deepEqual(initialLiteSet(['tasks'], ['dataview'], LIST, SELF), { liteSet: ['tasks'], needsSave: false });
+	assert.deepEqual(initialLiteSet([], ['dataview'], LIST, SELF), { liteSet: [], needsSave: false });
+});
+
+test('without a saved set, an earlier version\'s cached set is kept and saved', () => {
+	assert.deepEqual(initialLiteSet(undefined, ['dataview'], LIST, SELF), { liteSet: ['dataview'], needsSave: true });
+});
+
+test('a first install starts Lite as every switched-on plugin except the monitor', () => {
+	assert.deepEqual(initialLiteSet(undefined, null, LIST, SELF), { liteSet: ['tasks', 'smart', 'dataview', 'omni'], needsSave: true });
+});
+
+test('malformed saved or cached sets are ignored', () => {
+	assert.deepEqual(initialLiteSet('tasks', [1, 2], LIST, SELF).liteSet, ['tasks', 'smart', 'dataview', 'omni']);
 });

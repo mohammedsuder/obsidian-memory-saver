@@ -14,7 +14,7 @@
 | Start mode | What loads at start-up | Memory |
 |---|---|---|
 | 🧩 Standard | Every plugin switched on in Settings → Community plugins. Normal Obsidian. | Most |
-| 🪶 Lite | Only the plugins you tick for Lite (shared across your devices), and only if they are switched on. | Less |
+| 🪶 Lite | Only the plugins you tick for Lite (shared across your devices), and only if they are switched on. At first, every plugin that was switched on when you installed Memory Saver. | Less |
 | ⛔ Extreme | No community plugins except this one. | Least |
 
 Each device keeps its own start mode: a low-RAM laptop can start in Lite every day while your main PC, syncing the same vault, starts in Standard.
@@ -37,7 +37,7 @@ Readings differ between restarts in the same mode (Extreme has read between 229 
 
 ## Tips for saving the most memory
 
-- Start in **Lite** day to day, and tick only the plugins you rely on every day.
+- Lite starts with every plugin that was switched on when you installed Memory Saver, so it saves nothing until you untick some. Untick the ones you do not rely on every day, then start in **Lite** day to day.
 - Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.
 - Need a plugin briefly? Use **Load now** in the plugin list. It lasts until the next restart.
 - To get memory back, **restart** in a lighter mode. Unloading a plugin mid-session frees little.
@@ -52,7 +52,7 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 - **Click the status bar** for the popup: the **Start-up mode** switch at the top (hover each mode for what it does) with **Restart in …**, then this session (how it started, plugins running, what was not loaded), memory, and **Manage plugin list**. The help icon explains everything in the app.
 - **Choosing a start mode changes nothing until Obsidian restarts.** Until then the popup shows the mode that applies from the next start. The choice is stored on this device only.
 - **Plugin list:** what is running now, a 🧩 Standard tick (the same switch as Settings → Community plugins, so it applies on every device; unticking asks first), a 🪶 Lite tick, and **Load now** / **Unload now** for the current session only.
-- **Settings → Memory Saver:** start-up mode, how often memory is read, **Reset to suggested** for Lite and a shortcut to **Manage plugin list**, where Lite choices are made. Start-up mode and the refresh interval show up in Obsidian's settings search.
+- **Settings → Memory Saver:** start-up mode, how often memory is read, **Reset to all switched on** for Lite and a shortcut to **Manage plugin list**, where Lite choices are made. Start-up mode and the refresh interval show up in Obsidian's settings search.
 - Commands: Restart Obsidian in Standard / Lite / Extreme mode (this device), Open plugin list, Move to the top of the plugin list.
 
 ## How a Lite or Extreme start works

@@ -1,5 +1,5 @@
 import { App, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, SettingDefinitionItem, setIcon, setTooltip } from 'obsidian';
-import { Mode, moveToFront, sameSession, startupPlan } from './modes';
+import { Mode, initialLiteSet, moveToFront, sameSession, startupPlan } from './modes';
 import { MemoryReading, fmtMb, readMemory } from './memory';
 import kofiBadge from '../docs/images/support-me-on-kofi.webp';
 
@@ -32,11 +32,7 @@ interface StartRecord {
 	sessionId: number;
 }
 
-export const SUGGESTED_LITE = [
-	'obsidian-tasks-plugin', 'templater-obsidian', 'dataview', 'calendar', 'table-editor-obsidian',
-	'obsidian-admonition', 'obsidian-dynamic-toc', 'obsidian-reminder-plugin',
-];
-const DEFAULTS: Settings = { liteSet: SUGGESTED_LITE, refreshSeconds: 5 };
+const DEFAULT_REFRESH_SECONDS = 5;
 // Storage keys keep their original plugin-monitor prefix so start-up mode and Lite choices survive the
 // rename to Memory Saver (id memory-saver) in 0.4.0.
 /** Per device: the mode Obsidian starts in. */
@@ -67,7 +63,7 @@ const SESSION_ID = performance.timeOrigin;
 const sleep = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 export default class PluginMonitor extends Plugin {
-	settings: Settings = { ...DEFAULTS };
+	settings: Settings = { liteSet: [], refreshSeconds: DEFAULT_REFRESH_SECONDS };
 	/** The mode this Obsidian session started in, and which plugins were skipped. */
 	startedIn: Mode = 'full';
 	skippedAtStart: string[] = [];
@@ -138,7 +134,10 @@ export default class PluginMonitor extends Plugin {
 
 	async loadSettings() {
 		const data = (await this.loadData()) as Partial<Settings> | null;
-		this.settings = { liteSet: data?.liteSet ?? DEFAULTS.liteSet, refreshSeconds: data?.refreshSeconds ?? DEFAULTS.refreshSeconds };
+		// First install: Lite starts as every plugin switched on now. Upgrades keep the set this device had.
+		const lite = initialLiteSet(data?.liteSet, this.app.loadLocalStorage(LITE_CACHE_KEY), this.saved(), this.selfId);
+		this.settings = { liteSet: lite.liteSet, refreshSeconds: data?.refreshSeconds ?? DEFAULT_REFRESH_SECONDS };
+		if (lite.needsSave) await this.saveSettings();
 	}
 
 	async saveSettings() {
@@ -177,7 +176,8 @@ export default class PluginMonitor extends Plugin {
 	beginStartupSkip(mode: Mode) {
 		const api = this.api;
 		const saved = Array.from(api.enabledPlugins);
-		const liteSet = (this.app.loadLocalStorage(LITE_CACHE_KEY) as string[] | null) ?? SUGGESTED_LITE;
+		// No cached Lite set yet means settings have never loaded on this device; Lite then means everything.
+		const liteSet = (this.app.loadLocalStorage(LITE_CACHE_KEY) as string[] | null) ?? saved;
 		this.notFirstAtStart = saved[0] !== this.selfId;
 		this.startedIn = mode;
 		this.pendingSkip = new Set(startupPlan(saved, this.selfId, mode, liteSet).skip);
@@ -484,7 +484,7 @@ class AboutModal extends Modal {
 		intro.createDiv({ cls: 'pm-m-text', text: 'Older laptops, low-memory PCs and virtual desktops feel the cost of every plugin. A community plugin uses memory as soon as it loads and keeps most of it until Obsidian restarts, so switching one off mid-session hands very little back. Memory Saver lets each device choose which plugins load at start-up, so the rest never load at all.' });
 
 		bullets(section(body, 'Saving memory'), [
-			'Start in 🪶 Lite day to day, and tick only the plugins you rely on every day.',
+			'Lite starts with every plugin that was switched on when you installed Memory Saver. Untick the ones you do not rely on every day, then start in 🪶 Lite day to day.',
 			'Leave the heaviest plugins out of Lite. Plugins that index your whole vault or run AI models in the background tend to use the most memory.',
 			'Need a plugin briefly? Use "Load now" in Manage plugin list. It lasts until the next restart.',
 			'To get memory back, restart in a lighter mode. Unloading a plugin mid-session frees little.',
@@ -704,14 +704,19 @@ class MonitorSettingTab extends PluginSettingTab {
 				items: [
 					{
 						name: 'Choose which plugins load in Lite',
-						desc: `Tick plugins under ${ICON.lite} Lite in Manage plugin list. Lite choices are shared across your devices, and a plugin only loads in Lite if it is also switched on.`,
+						desc: `Lite starts with every plugin that was switched on when Memory Saver was installed. Untick the ones you do not need every day under ${ICON.lite} Lite in Manage plugin list. Lite choices are shared across your devices, and a plugin only loads in Lite if it is also switched on.`,
 						aliases: ['Plugin list', 'Lite'],
 						render: (setting) => {
 							setting
-								.addButton((b) => b.setButtonText('Reset to suggested').onClick(async () => {
-									p.settings.liteSet = [...SUGGESTED_LITE];
-									await p.saveSettings();
-									new Notice('Lite plugins reset to the suggested set.');
+								.addButton((b) => b.setButtonText('Reset to all switched on').onClick(() => {
+									const all = p.saved().filter((id) => id !== p.selfId);
+									new ConfirmModal(this.app,
+										`Tick all ${all.length} plugins that are switched on for Lite? This replaces your current Lite choices on every device.`,
+										async () => {
+											p.settings.liteSet = all;
+											await p.saveSettings();
+											new Notice(`Lite now loads all ${all.length} plugins that are switched on.`);
+										}).open();
 								}))
 								.addButton((b) => b.setButtonText('Manage plugin list').setCta()
 									.onClick(() => new MonitorModal(this.app, p).open()));

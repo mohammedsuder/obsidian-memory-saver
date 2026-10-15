@@ -24,6 +24,19 @@ export function startupPlan(savedOrder: string[], selfId: string, startMode: Mod
 	return { skip: later.filter((id) => !keep.has(id)) };
 }
 
+/**
+ * The Lite set to use when settings load, and whether it still has to be saved. A saved set always wins. Without
+ * one, a copy cached on this device by an earlier version keeps what the user had (versions up to 0.5.0 fell back to
+ * a built-in list without saving it). Otherwise this is a first install: Lite starts as every plugin switched on now,
+ * so it loads the same as Standard until the user unticks plugins.
+ */
+export function initialLiteSet(saved: unknown, cached: unknown, switchedOn: string[], selfId: string): { liteSet: string[]; needsSave: boolean } {
+	const isList = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
+	if (isList(saved)) return { liteSet: saved, needsSave: false };
+	if (isList(cached)) return { liteSet: cached, needsSave: true };
+	return { liteSet: switchedOn.filter((id) => id !== selfId), needsSave: true };
+}
+
 /** The saved list with the monitor moved to the front, everything else in its existing order. */
 export function moveToFront(savedOrder: string[], selfId: string): string[] {
 	return [selfId, ...savedOrder.filter((id) => id !== selfId)];
