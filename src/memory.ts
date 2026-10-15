@@ -10,16 +10,24 @@ export interface MemoryReading {
 
 const MB = 1024 * 1024;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/** The parts of Electron's renderer `process` used here. Every member is optional, as none is guaranteed. */
+interface ElectronProcess {
+	memoryUsage?: () => { heapUsed?: number; rss?: number };
+	getProcessMemoryInfo?: () => Promise<{ private?: number; residentSet?: number }>;
+}
+
+/** Chromium's non-standard performance.memory. */
+type PerformanceWithMemory = Performance & { memory?: { usedJSHeapSize?: number } };
+
 export async function readMemory(): Promise<MemoryReading> {
-	const proc: any = (window as any).process;
+	const proc = (window as { process?: ElectronProcess }).process;
 	let heapMb: number | null = null;
 	try {
 		const u = proc?.memoryUsage?.();
 		if (u?.heapUsed) heapMb = u.heapUsed / MB;
 	} catch { /* not available */ }
 	if (heapMb === null) {
-		const pm = (performance as any).memory;
+		const pm = (performance as PerformanceWithMemory).memory;
 		if (pm?.usedJSHeapSize) heapMb = pm.usedJSHeapSize / MB;
 	}
 	// Electron: private/resident memory of this process, in kilobytes. Includes workers and native buffers.
@@ -37,7 +45,6 @@ export async function readMemory(): Promise<MemoryReading> {
 	if (heapMb !== null) return { mb: heapMb, heapMb, source: 'heap' };
 	return { mb: 0, heapMb: null, source: 'none' };
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function fmtMb(mb: number): string {
 	return mb >= 1024 ? `${(mb / 1024).toFixed(2)} GB` : `${Math.round(mb)} MB`;

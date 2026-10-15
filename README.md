@@ -52,6 +52,7 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 - **Click the status bar** for the popup: the **Start-up mode** switch at the top (hover each mode for what it does) with **Restart in …**, then this session (how it started, plugins running, what was not loaded), memory, and **Manage plugin list**. The help icon explains everything in the app.
 - **Choosing a start mode changes nothing until Obsidian restarts.** Until then the popup shows the mode that applies from the next start. The choice is stored on this device only.
 - **Plugin list:** what is running now, a 🧩 Standard tick (the same switch as Settings → Community plugins, so it applies on every device; unticking asks first), a 🪶 Lite tick, and **Load now** / **Unload now** for the current session only.
+- **Settings → Memory Saver:** start-up mode, how often memory is read, and the Lite plugins. Start-up mode and the refresh interval show up in Obsidian's settings search.
 - Commands: Restart Obsidian in Standard / Lite / Extreme mode (this device), Open plugin list, Move to the top of the plugin list.
 
 ## How a Lite or Extreme start works
@@ -81,7 +82,7 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 
 The plugin was renamed and its id changed in 0.4.0, so Obsidian treats it as a new plugin. Install 0.4.0 into `.obsidian/plugins/memory-saver/`, switch on **Memory Saver**, then switch off and delete Plugin Memory Monitor. Your start-up mode and Lite choices carry over on each device. Choosing Lite or Extreme again moves Memory Saver to the top of your plugin list.
 
-Requires Obsidian 1.8.7 or later on desktop. Tested on Obsidian 1.14.4.
+Requires Obsidian 1.13.0 or later on desktop (0.4.1 is the last version for older Obsidian). Tested on Obsidian 1.14.4.
 
 - **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-memory-saver/releases/latest), put them in `<your vault>/.obsidian/plugins/memory-saver/`, then switch the plugin on in Settings → Community plugins.
 - **With BRAT:** add `mohammedsuder/obsidian-memory-saver` as a beta plugin.

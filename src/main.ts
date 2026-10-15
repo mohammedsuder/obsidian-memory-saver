@@ -1,4 +1,4 @@
-import { App, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, setIcon, setTooltip } from 'obsidian';
+import { App, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, SettingDefinitionItem, setIcon, setTooltip } from 'obsidian';
 import { Mode, moveToFront, sameSession, startupPlan } from './modes';
 import { MemoryReading, fmtMb, readMemory } from './memory';
 import kofiBadge from '../docs/images/support-me-on-kofi.webp';
@@ -12,7 +12,8 @@ interface PluginsApi {
 	manifests: Record<string, PluginManifest>;
 	plugins: Record<string, Plugin>;
 	enabledPlugins: Set<string>;
-	enablePlugin(id: string, ...rest: unknown[]): Promise<boolean>;
+	// A property rather than a method: the start-up skip keeps a reference to the original and wraps it.
+	enablePlugin: (this: PluginsApi, id: string, ...rest: unknown[]) => Promise<boolean>;
 	disablePlugin(id: string): Promise<void>;
 	enablePluginAndSave(id: string): Promise<boolean>;
 	disablePluginAndSave(id: string): Promise<void>;
@@ -80,8 +81,7 @@ export default class PluginMonitor extends Plugin {
 	private restoreEnable: (() => void) | null = null;
 
 	get api(): PluginsApi {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return (this.app as any).plugins as PluginsApi;
+		return (this.app as App & { plugins: PluginsApi }).plugins;
 	}
 
 	get selfId(): string {
@@ -121,8 +121,7 @@ export default class PluginMonitor extends Plugin {
 		this.closePopup();
 		// If you switch the monitor itself off after a Lite or Extreme start, load what it skipped.
 		// _userDisabled is set by Obsidian only when a user disables the plugin, not on app quit.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		if ((this as any)._userDisabled && this.skippedAtStart.length) {
+		if ((this as this & { _userDisabled?: boolean })._userDisabled && this.skippedAtStart.length) {
 			const api = this.api;
 			const toLoad = this.skippedAtStart.filter((id) => api.enabledPlugins.has(id) && !api.plugins[id]);
 			new Notice(`Memory Saver turned off: loading the ${toLoad.length} plugins it skipped at start-up.`);
@@ -138,8 +137,8 @@ export default class PluginMonitor extends Plugin {
 	// ---------- settings and per-device storage ----------
 
 	async loadSettings() {
-		const data = (await this.loadData()) ?? {};
-		this.settings = { liteSet: data.liteSet ?? DEFAULTS.liteSet, refreshSeconds: data.refreshSeconds ?? DEFAULTS.refreshSeconds };
+		const data = (await this.loadData()) as Partial<Settings> | null;
+		this.settings = { liteSet: data?.liteSet ?? DEFAULTS.liteSet, refreshSeconds: data?.refreshSeconds ?? DEFAULTS.refreshSeconds };
 	}
 
 	async saveSettings() {
@@ -152,7 +151,7 @@ export default class PluginMonitor extends Plugin {
 	}
 
 	startMode(): Mode {
-		const m = this.app.loadLocalStorage(START_KEY);
+		const m: unknown = this.app.loadLocalStorage(START_KEY);
 		return m === 'lite' || m === 'extreme' ? m : 'full';
 	}
 
@@ -200,8 +199,7 @@ export default class PluginMonitor extends Plugin {
 		api.enablePlugin = wrapper;
 		this.restoreEnable = () => {
 			if (api.enablePlugin !== wrapper) return; // someone else replaced it since; leave theirs alone
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if (hadOwn) api.enablePlugin = original; else delete (api as any).enablePlugin;
+			if (hadOwn) api.enablePlugin = original; else delete (api as Partial<PluginsApi>).enablePlugin;
 		};
 	}
 
@@ -422,14 +420,14 @@ export default class PluginMonitor extends Plugin {
 class ConfirmModal extends Modal {
 	private answered = false;
 
-	constructor(app: App, private message: string, private onYes: () => void, private onNo?: () => void) {
+	constructor(app: App, private message: string, private onYes: () => Promise<void>, private onNo?: () => void) {
 		super(app);
 	}
 
 	onOpen() {
 		this.contentEl.createEl('p', { text: this.message });
 		new Setting(this.contentEl)
-			.addButton((b) => b.setButtonText('Yes').setWarning().onClick(() => { this.answered = true; this.close(); this.onYes(); }))
+			.addButton((b) => b.setButtonText('Yes').setDestructive().onClick(() => { this.answered = true; this.close(); void this.onYes(); }))
 			.addButton((b) => b.setButtonText('Cancel').onClick(() => this.close()));
 	}
 
@@ -675,44 +673,84 @@ class MonitorModal extends Modal {
 	}
 }
 
+/** Settings key for each plugin's Lite toggle: `lite:<plugin id>`. */
+const LITE_KEY = 'lite:';
+
+/**
+ * Declarative settings (Obsidian 1.13.0 and later), so they appear in Obsidian's settings search. Values live in
+ * two places, the start-up mode in this device's local storage and the rest in data.json, so this tab reads and
+ * writes them itself instead of using the default `plugin.settings` binding.
+ */
 class MonitorSettingTab extends PluginSettingTab {
 	constructor(app: App, private plugin: PluginMonitor) {
 		super(app, plugin);
 	}
 
-	display() {
-		const { containerEl } = this;
+	getSettingDefinitions(): SettingDefinitionItem[] {
 		const p = this.plugin;
-		containerEl.empty();
+		const others = Object.keys(p.api.manifests).filter((id) => id !== p.selfId)
+			.sort((a, b) => p.pluginName(a).localeCompare(p.pluginName(b)));
+		return [
+			{
+				name: 'Start-up mode (this device)',
+				desc: 'Plugins outside this mode are never loaded at start-up, which is what saves memory. Stored on this device only. Lite and Extreme move Memory Saver to the top of your plugin list so it loads first.',
+				aliases: MODES.map((m) => LABEL[m]),
+				control: { type: 'dropdown', key: 'startMode', options: Object.fromEntries(MODES.map((m) => [m, `${ICON[m]} ${LABEL[m]}`])) },
+			},
+			{
+				name: 'Refresh every (seconds)',
+				desc: 'How often the status bar reads memory.',
+				control: { type: 'slider', key: 'refreshSeconds', min: 2, max: 60, step: 1 },
+			},
+			{
+				type: 'group',
+				heading: 'Lite plugins',
+				items: [
+					{
+						name: 'Choose what loads in Lite',
+						desc: 'Plugins that load when Obsidian starts in Lite. Shared across your devices. A plugin only loads if it is also switched on (ticked under Standard in the plugin list). The same choices appear in the plugin list.',
+						render: (setting) => {
+							setting.addButton((b) => b.setButtonText('Reset to suggested').onClick(async () => {
+								p.settings.liteSet = [...SUGGESTED_LITE];
+								await p.saveSettings();
+								this.update();
+							}));
+						},
+					},
+					// Left out of settings search: a row named after another plugin would look like that plugin's settings.
+					...others.map((id) => ({
+						name: p.pluginName(id),
+						desc: `${id}${p.api.enabledPlugins.has(id) ? '' : ' · not switched on'}`,
+						searchable: false,
+						control: { type: 'toggle' as const, key: `${LITE_KEY}${id}` },
+					})),
+				],
+			},
+		];
+	}
 
-		new Setting(containerEl).setName('Start-up mode (this device)')
-			.setDesc('Plugins outside this mode are never loaded at start-up, which is what saves memory. Stored on this device only. Lite and Extreme move Memory Saver to the top of your plugin list so it loads first.')
-			.addDropdown((d) => {
-				MODES.forEach((m) => d.addOption(m, `${ICON[m]} ${LABEL[m]}`));
-				d.setValue(p.startMode()).onChange(async (v) => { await p.chooseStartMode(v as Mode); this.display(); });
-			});
-		new Setting(containerEl).setName('Refresh every (seconds)').setDesc('How often the status bar reads memory.')
-			.addSlider((s) => s.setLimits(2, 60, 1).setValue(p.settings.refreshSeconds).setDynamicTooltip()
-				.onChange(async (v) => { p.settings.refreshSeconds = v; await p.saveSettings(); p.startRefresh(); }));
+	getControlValue(key: string): unknown {
+		const p = this.plugin;
+		if (key === 'startMode') return p.startMode();
+		if (key === 'refreshSeconds') return p.settings.refreshSeconds;
+		if (key.startsWith(LITE_KEY)) return p.settings.liteSet.includes(key.slice(LITE_KEY.length));
+		return undefined;
+	}
 
-		new Setting(containerEl).setName('Lite plugins').setHeading();
-		new Setting(containerEl)
-			.setDesc('Plugins that load when Obsidian starts in Lite. Shared across your devices. A plugin only loads if it is also switched on (ticked under Standard in the plugin list). The same choices appear in the plugin list.')
-			.addButton((b) => b.setButtonText('Reset to suggested').onClick(async () => {
-				p.settings.liteSet = [...SUGGESTED_LITE];
-				await p.saveSettings();
-				this.display();
-			}));
-		Object.keys(p.api.manifests).filter((id) => id !== p.selfId)
-			.sort((a, b) => p.pluginName(a).localeCompare(p.pluginName(b)))
-			.forEach((id) => {
-				new Setting(containerEl)
-					.setName(p.pluginName(id))
-					.setDesc(`${id}${p.api.enabledPlugins.has(id) ? '' : ' · not switched on'}`)
-					.addToggle((t) => t.setValue(p.settings.liteSet.includes(id)).onChange(async (v) => {
-						p.settings.liteSet = v ? [...p.settings.liteSet, id] : p.settings.liteSet.filter((x) => x !== id);
-						await p.saveSettings();
-					}));
-			});
+	async setControlValue(key: string, value: unknown): Promise<void> {
+		const p = this.plugin;
+		if (key === 'startMode') {
+			// If the mode cannot be applied (Memory Saver not switched on), the dropdown shows the unchanged mode.
+			if (MODES.includes(value as Mode)) await p.chooseStartMode(value as Mode);
+		} else if (key === 'refreshSeconds' && typeof value === 'number') {
+			p.settings.refreshSeconds = value;
+			await p.saveSettings();
+			p.startRefresh();
+		} else if (key.startsWith(LITE_KEY) && typeof value === 'boolean') {
+			const id = key.slice(LITE_KEY.length);
+			const others = p.settings.liteSet.filter((x) => x !== id);
+			p.settings.liteSet = value ? [...others, id] : others;
+			await p.saveSettings();
+		}
 	}
 }
