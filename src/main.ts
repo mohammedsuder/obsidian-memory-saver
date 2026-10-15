@@ -36,6 +36,8 @@ export const SUGGESTED_LITE = [
 	'obsidian-admonition', 'obsidian-dynamic-toc', 'obsidian-reminder-plugin',
 ];
 const DEFAULTS: Settings = { liteSet: SUGGESTED_LITE, refreshSeconds: 5 };
+// Storage keys keep their original plugin-monitor prefix so start-up mode and Lite choices survive the
+// rename to Memory Saver (id memory-saver) in 0.4.0.
 /** Per device: the mode Obsidian starts in. */
 const START_KEY = 'plugin-monitor-start-mode';
 /** Per device copy of the Lite set, readable synchronously at start-up before settings load. */
@@ -107,7 +109,7 @@ export default class PluginMonitor extends Plugin {
 				// Every plugin has had its turn by now; stop intercepting shortly after as a safety net.
 				window.setTimeout(() => this.endStartupSkip(), 10000);
 				new Notice(`${ICON[this.startedIn]} Started in ${LABEL[this.startedIn]} mode: ${this.skippedAtStart.length} plugins not loaded.`
-					+ (this.notFirstAtStart ? '\nPlugin Memory Monitor is not first in your plugin list, so some plugins loaded before it could act. Use "Move to top" in its popup.' : ''), 10000);
+					+ (this.notFirstAtStart ? '\nMemory Saver is not first in your plugin list, so some plugins loaded before it could act. Use "Move to top" in its popup.' : ''), 10000);
 			});
 		}
 		this.startRefresh();
@@ -123,10 +125,10 @@ export default class PluginMonitor extends Plugin {
 		if ((this as any)._userDisabled && this.skippedAtStart.length) {
 			const api = this.api;
 			const toLoad = this.skippedAtStart.filter((id) => api.enabledPlugins.has(id) && !api.plugins[id]);
-			new Notice(`Plugin Memory Monitor turned off: loading the ${toLoad.length} plugins it skipped at start-up.`);
+			new Notice(`Memory Saver turned off: loading the ${toLoad.length} plugins it skipped at start-up.`);
 			void (async () => {
 				for (const id of toLoad) {
-					try { await api.enablePlugin(id); } catch (e) { console.error('Plugin Memory Monitor: could not load', id, e); }
+					try { await api.enablePlugin(id); } catch (e) { console.error('Memory Saver: could not load', id, e); }
 				}
 			})();
 			this.app.saveLocalStorage(RECORD_KEY, null);
@@ -242,7 +244,7 @@ export default class PluginMonitor extends Plugin {
 	async moveToTop(): Promise<boolean> {
 		const api = this.api;
 		if (!api.enabledPlugins.has(this.selfId)) {
-			new Notice('Switch Plugin Memory Monitor on in Settings → Community plugins first, so it is on your saved plugin list.', 10000);
+			new Notice('Switch Memory Saver on in Settings → Community plugins first, so it is on your saved plugin list.', 10000);
 			return false;
 		}
 		if (this.isFirstInList()) return true;
@@ -250,7 +252,7 @@ export default class PluginMonitor extends Plugin {
 		api.enabledPlugins.clear();
 		order.forEach((id) => api.enabledPlugins.add(id));
 		await api.saveConfig();
-		new Notice('Moved Plugin Memory Monitor to the top of your plugin list so it loads first. Only the order changed.', 8000);
+		new Notice('Moved Memory Saver to the top of your plugin list so it loads first. Only the order changed.', 8000);
 		return true;
 	}
 
@@ -266,7 +268,7 @@ export default class PluginMonitor extends Plugin {
 		const views: MarkdownView[] = [];
 		this.app.workspace.iterateAllLeaves((leaf) => { if (leaf.view instanceof MarkdownView) views.push(leaf.view); });
 		for (const v of views) {
-			try { await v.save(); } catch (e) { console.error('Plugin Memory Monitor: could not save before restart', e); }
+			try { await v.save(); } catch (e) { console.error('Memory Saver: could not save before restart', e); }
 		}
 		await sleep(300);
 		window.location.reload();
@@ -299,7 +301,7 @@ export default class PluginMonitor extends Plugin {
 		const saved = this.saved().length;
 		const mem = m.source === 'none' ? '?' : fmtMb(m.mb);
 		this.statusEl.setText(`${ICON[this.startedIn]} ${LABEL[this.startedIn]} · 🧩 ${running}/${saved} · ${mem}`);
-		setTooltip(this.statusEl, `Plugin Memory Monitor: started in ${LABEL[this.startedIn]} mode, ${running} of ${saved} plugins running. Click for start mode and details.`, { placement: 'top' });
+		setTooltip(this.statusEl, `Memory Saver: started in ${LABEL[this.startedIn]} mode, ${running} of ${saved} plugins running. Click for start mode and details.`, { placement: 'top' });
 		this.renderPopup();
 	}
 
@@ -340,7 +342,7 @@ export default class PluginMonitor extends Plugin {
 
 		// Header
 		const head = pop.createDiv({ cls: 'pm-pop-head' });
-		head.createSpan({ cls: 'pm-pop-title', text: 'Plugin Memory Monitor' });
+		head.createSpan({ cls: 'pm-pop-title', text: 'Memory Saver' });
 		this.addHelpIcon(head);
 
 		// Start-up mode: the setting that saves memory, first.
@@ -475,13 +477,13 @@ class AboutModal extends Modal {
 		c.empty();
 
 		const head = c.createDiv({ cls: 'pm-m-head' });
-		head.createSpan({ cls: 'pm-m-title', text: 'Plugin Memory Monitor' });
+		head.createSpan({ cls: 'pm-m-title', text: 'Memory Saver' });
 		head.createSpan({ cls: 'pm-m-version', text: this.version });
 
 		const body = c.createDiv({ cls: 'pm-m-scroll' });
 		const intro = body.createDiv({ cls: 'pm-m-section pm-m-intro' });
 		intro.createDiv({ cls: 'pm-m-lead', text: 'Save memory in Obsidian on machines with limited RAM.' });
-		intro.createDiv({ cls: 'pm-m-text', text: 'Older laptops, low-memory PCs and virtual desktops feel the cost of every plugin. A community plugin uses memory as soon as it loads and keeps most of it until Obsidian restarts, so switching one off mid-session hands very little back. Plugin Memory Monitor lets each device choose which plugins load at start-up, so the rest never load at all.' });
+		intro.createDiv({ cls: 'pm-m-text', text: 'Older laptops, low-memory PCs and virtual desktops feel the cost of every plugin. A community plugin uses memory as soon as it loads and keeps most of it until Obsidian restarts, so switching one off mid-session hands very little back. Memory Saver lets each device choose which plugins load at start-up, so the rest never load at all.' });
 
 		bullets(section(body, 'Saving memory'), [
 			'Start in 🪶 Lite day to day, and tick only the plugins you rely on every day.',
@@ -524,7 +526,7 @@ class AboutModal extends Modal {
 
 		const foot = c.createDiv({ cls: 'pm-m-footer pm-m-footer-split' });
 		const credit = foot.createDiv({ cls: 'pm-m-credit' });
-		credit.createSpan({ text: `Plugin Memory Monitor ${this.version} by ${AUTHOR} · ` });
+		credit.createSpan({ text: `Memory Saver ${this.version} by ${AUTHOR} · ` });
 		credit.createEl('a', { text: 'Source and issues on GitHub', href: REPO_URL });
 		// Badge is bundled into main.js, so nothing is fetched from the internet; the link opens in the browser.
 		const kofi = foot.createEl('a', { cls: 'pm-kofi', href: KOFI_URL });
@@ -684,7 +686,7 @@ class MonitorSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl).setName('Start-up mode (this device)')
-			.setDesc('Plugins outside this mode are never loaded at start-up, which is what saves memory. Stored on this device only. Lite and Extreme move Plugin Memory Monitor to the top of your plugin list so it loads first.')
+			.setDesc('Plugins outside this mode are never loaded at start-up, which is what saves memory. Stored on this device only. Lite and Extreme move Memory Saver to the top of your plugin list so it loads first.')
 			.addDropdown((d) => {
 				MODES.forEach((m) => d.addOption(m, `${ICON[m]} ${LABEL[m]}`));
 				d.setValue(p.startMode()).onChange(async (v) => { await p.chooseStartMode(v as Mode); this.display(); });

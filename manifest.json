@@ -1,9 +1,9 @@
 {
-  "id": "plugin-monitor",
-  "name": "Plugin Memory Monitor",
-  "version": "0.3.1",
+  "id": "memory-saver",
+  "name": "Memory Saver",
+  "version": "0.4.0",
   "minAppVersion": "1.8.7",
-  "description": "Save memory on resource-constrained machines: choose which community plugins load when Obsidian starts, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
+  "description": "Save memory on resource-constrained machines: choose which community plugins load at start-up, per device (Standard, Lite or Extreme), with memory and plugin count in the status bar.",
   "author": "Mohammed Ilyas Suder",
   "isDesktopOnly": true,
   "authorUrl": "https://github.com/mohammedsuder"

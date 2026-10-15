@@ -9,7 +9,7 @@ if (!vault) {
 	console.error('Set OBSIDIAN_VAULT or create a .vault-path file containing the path to your vault.');
 	process.exit(1);
 }
-const dest = join(vault, '.obsidian', 'plugins', 'plugin-monitor');
+const dest = join(vault, '.obsidian', 'plugins', 'memory-saver');
 mkdirSync(dest, { recursive: true });
 for (const f of ['main.js', 'manifest.json', 'styles.css']) copyFileSync(f, join(dest, f));
 console.log(`Installed to ${dest}`);

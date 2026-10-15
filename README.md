@@ -1,8 +1,8 @@
-# Plugin Memory Monitor
+# Memory Saver
 
 <a href="https://ko-fi.com/mohsu"><img src="docs/images/support-me-on-kofi.webp" alt="Support me on Ko-fi" height="36"></a>
 
-**Save memory in Obsidian on resource-constrained machines.** Older laptops, low-RAM PCs and shared or virtual desktops feel the cost of every Obsidian plugin. Plugin Memory Monitor lets each device start Obsidian with only the plugins it needs, so the rest never load and never use memory. It also shows Obsidian's memory and plugin count in the status bar, so you can see the effect.
+**Save memory in Obsidian on resource-constrained machines.** Older laptops, low-RAM PCs and shared or virtual desktops feel the cost of every Obsidian plugin. Memory Saver lets each device start Obsidian with only the plugins it needs, so the rest never load and never use memory. It also shows Obsidian's memory and plugin count in the status bar, so you can see the effect.
 
 | 🧩 Standard start | ⛔ Extreme start |
 |:---:|:---:|
@@ -71,14 +71,18 @@ Only community plugins are affected. Obsidian's core plugins (Daily notes, Searc
 
 ## Notes
 
-- The plugin id is `plugin-monitor` (the original name); the display name is Plugin Memory Monitor.
+- The plugin id is `memory-saver`. Versions up to 0.3.1 were called Plugin Memory Monitor, with the id `plugin-monitor`.
 - Desktop only. It relies on Obsidian internals that are not part of the public API (`app.plugins`, the order of `community-plugins.json`), so an Obsidian update could change its behaviour. If that happens, the fail-safe above applies.
 
 ## Install
 
+### Upgrading from 0.3.x (Plugin Memory Monitor)
+
+The plugin was renamed and its id changed in 0.4.0, so Obsidian treats it as a new plugin. Install 0.4.0 into `.obsidian/plugins/memory-saver/`, switch on **Memory Saver**, then switch off and delete Plugin Memory Monitor. Your start-up mode and Lite choices carry over on each device. Choosing Lite or Extreme again moves Memory Saver to the top of your plugin list.
+
 Requires Obsidian 1.8.7 or later on desktop. Tested on Obsidian 1.14.4.
 
-- **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-plugin-memory-monitor/releases/latest), put them in `<your vault>/.obsidian/plugins/plugin-monitor/`, then switch the plugin on in Settings → Community plugins.
+- **From a release:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/mohammedsuder/obsidian-plugin-memory-monitor/releases/latest), put them in `<your vault>/.obsidian/plugins/memory-saver/`, then switch the plugin on in Settings → Community plugins.
 - **With BRAT:** add `mohammedsuder/obsidian-plugin-memory-monitor` as a beta plugin.
 - **From source:** build it (below) and copy the same three files.
 
@@ -98,7 +102,7 @@ Built with Obsidian API 1.14.4, TypeScript 7.0.2, esbuild 0.28.2, Node 24.
 
 Mohammed Ilyas Suder · [github.com/mohammedsuder](https://github.com/mohammedsuder)
 
-I love building creative, practical software. If Plugin Memory Monitor saves you memory, you can support it on [Ko-fi](https://ko-fi.com/mohsu): contributions make further free, useful software possible.
+I love building creative, practical software. If Memory Saver saves you memory, you can support it on [Ko-fi](https://ko-fi.com/mohsu): contributions make further free, useful software possible.
 
 ## Licence
 
