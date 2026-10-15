@@ -7,13 +7,19 @@
     "dev": "node esbuild.config.mjs watch",
     "build": "tsc --noEmit && node esbuild.config.mjs production",
     "test": "node esbuild.config.mjs test && node --test \"build-test/*.test.mjs\"",
+    "lint": "eslint --max-warnings 0 src package.json",
     "install-vault": "node scripts/install-vault.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@eslint/json": "^0.14.0",
     "@types/node": "^26.6.5",
     "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-obsidianmd": "^0.4.2",
     "obsidian": "^1.14.4",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2"
   },
   "author": "Mohammed Ilyas Suder",
   "repository": {

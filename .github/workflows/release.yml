@@ -1,6 +1,6 @@
 name: Release
 
-# Builds the plugin from the tagged source, runs the tests, attests the provenance of the release files and
+# Builds the plugin from the tagged source, runs the lint and the tests, attests the provenance of the release files and
 # publishes the GitHub release. Push a tag that matches manifest.json's version (for example 0.4.0) to run it.
 # Release notes come from release-notes/<tag>.md when that file exists.
 
@@ -26,6 +26,7 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - run: npm run lint
       - run: npm test
       - run: npm run build
 

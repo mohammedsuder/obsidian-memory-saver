@@ -92,13 +92,14 @@ Requires Obsidian 1.13.0 or later on desktop (0.4.1 is the last version for olde
 
 ```
 npm install
+npm run lint           # the Obsidian community directory's lint rules (eslint-plugin-obsidianmd)
 npm test               # unit tests for the start-mode logic (node:test)
 npm run build          # type-check (tsc) and bundle main.js (esbuild)
 npm run install-vault  # copy the build into a vault (set OBSIDIAN_VAULT, or put the vault path in a .vault-path file)
 npm run dev            # rebuild on change
 ```
 
-Built with Obsidian API 1.14.4, TypeScript 7.0.2, esbuild 0.28.2, Node 24.
+Built with Obsidian API 1.14.4, TypeScript 6.0.3, esbuild 0.28.2, Node 24. Linted with eslint-plugin-obsidianmd 0.4.2 on ESLint 9 and typescript-eslint 8, which do not support TypeScript 7 yet.
 
 ## Author
 
